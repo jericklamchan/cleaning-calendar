@@ -1,4 +1,3 @@
-// data/mockData.ts
 import { Cleaner, Property, DaySchedule } from "@/types/planner";
 
 export function getMockScheduleForWeek(

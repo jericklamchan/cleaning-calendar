@@ -1,4 +1,3 @@
-// app/settings/page.tsx
 import { Suspense } from 'react';
 import { getSettings } from '@/utils/settingsCache';
 import SettingsForm from '@/components/SettingsForm';

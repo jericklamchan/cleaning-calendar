@@ -1,4 +1,3 @@
-// app/page.tsx (or app/dashboard/page.tsx)
 import { getProperties } from '@/utils/propertyStore';
 import { getCleaners } from '@/utils/cleanerStore';
 import { getUsers } from '@/utils/userStore';

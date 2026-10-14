@@ -1,21 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { CompanySettings } from '@/types/settings';
+import { GlobalSettings } from '@/types/settings';
 import { updateSettingsAction } from '@/app/actions/settingsActions';
 import { Card } from '@/components/ui/Card';
 import { Save } from 'lucide-react';
 
 interface Props {
-  initialSettings: CompanySettings;
+  initialSettings: GlobalSettings;
 }
 
 export default function SettingsForm({ initialSettings }: Props) {
-  const [settings, setSettings] = useState<CompanySettings>(initialSettings);
+  const [settings, setSettings] = useState<GlobalSettings>(initialSettings);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleChange = (field: keyof CompanySettings, value: number) => {
+  const handleChange = (field: keyof GlobalSettings, value: number) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
     setIsDirty(true);
   };

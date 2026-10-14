@@ -18,5 +18,5 @@ export async function updateSettingsAction(formData: FormData) {
   };
 
   await saveSettings(settingsData);
-  revalidatePath('/settings'); // Adjust to your settings page route
+  revalidatePath('/settings');
 }
