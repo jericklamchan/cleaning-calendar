@@ -2,9 +2,10 @@
 "use client";
 
 import { useState } from "react";
-import { DaySchedule, Cleaner, CleaningAssignment } from "@/types/planner";
+import { DaySchedule, Cleaner } from "@/types/planner";
 import DayRow from "@/components/DayRow";
 import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem } from "lucide-react";
+import { isHighValueAssignment, isSameDayTurnover } from "@/utils/plannerUtils";
 
 interface PlannerClientProps {
   schedule: DaySchedule[];
@@ -12,13 +13,6 @@ interface PlannerClientProps {
   weekLabel: string;
   prevHref: string;
   nextHref: string;
-}
-
-// Helper function to evaluate high-value assignments ($2,000+)
-function isHighValue(c: CleaningAssignment): boolean {
-  const checkOutPrice = c.checkOut?.totalPrice ?? 0;
-  const checkInPrice = c.checkIn?.totalPrice ?? 0;
-  return checkOutPrice >= 2000 || checkInPrice >= 2000;
 }
 
 export default function Planner({
@@ -34,7 +28,7 @@ export default function Planner({
     setExpandedDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
-  // Compute total weekly cleanings, same-day turnovers, and high-value reservations
+  // Compute total weekly stats using centralized helpers
   const totalWeekCleanings = schedule.reduce(
     (acc, day) => acc + day.cleanings.filter((c) => !c.dayOff).length,
     0
@@ -42,13 +36,13 @@ export default function Planner({
 
   const totalWeekSameDayTurnovers = schedule.reduce(
     (acc, day) =>
-      acc + day.cleanings.filter((c) => !c.dayOff && c.checkOut && c.checkIn).length,
+      acc + day.cleanings.filter((c) => !c.dayOff && isSameDayTurnover(c)).length,
     0
   );
 
   const totalWeekHighValue = schedule.reduce(
     (acc, day) =>
-      acc + day.cleanings.filter((c) => !c.dayOff && isHighValue(c)).length,
+      acc + day.cleanings.filter((c) => !c.dayOff && isHighValueAssignment(c)).length,
     0
   );
 

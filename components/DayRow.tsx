@@ -1,16 +1,21 @@
 // components/DayRow.tsx
 "use client";
 
-import { DaySchedule, Cleaner, CleaningAssignment } from "@/types/planner";
+import { DaySchedule, Cleaner } from "@/types/planner";
 import {
   ChevronDown,
   Sparkles,
   RefreshCw,
-  AlertCircle,
   Moon,
   Home,
   Gem,
+  AlertTriangle,
 } from "lucide-react";
+import {
+  isHighValueAssignment,
+  isSameDayTurnover,
+  isCleanerOverloaded,
+} from "@/utils/plannerUtils";
 
 interface DayRowProps {
   day: DaySchedule;
@@ -18,13 +23,6 @@ interface DayRowProps {
   isHighlighted: boolean;
   isExpanded: boolean;
   onToggle: () => void;
-}
-
-// Helper function to identify high-value assignments (\$2000+)
-function isHighValue(c: CleaningAssignment): boolean {
-  const checkOutPrice = c.checkOut?.totalPrice ?? 0;
-  const checkInPrice = c.checkIn?.totalPrice ?? 0;
-  return checkOutPrice >= 2000 || checkInPrice >= 2000;
 }
 
 export default function DayRow({
@@ -37,11 +35,8 @@ export default function DayRow({
   const activeCleanings = day.cleanings.filter((c) => !c.dayOff);
   const totalCleanings = activeCleanings.length;
   
-  const sameDayTurnoversCount = activeCleanings.filter(
-    (c) => c.checkOut && c.checkIn
-  ).length;
-
-  const highValueCount = activeCleanings.filter(isHighValue).length;
+  const sameDayTurnoversCount = activeCleanings.filter(isSameDayTurnover).length;
+  const highValueCount = activeCleanings.filter(isHighValueAssignment).length;
 
   return (
     <div
@@ -86,7 +81,6 @@ export default function DayRow({
 
         {/* Day Summary Content */}
         <div className="flex-1 min-w-0 px-5 py-4 flex items-center gap-3">
-          {/* Cleaning Stats, Same-Day & High-Value Badges */}
           <div className="flex items-center gap-2 shrink-0 text-sm font-medium tabular-nums">
             <span className="text-gray-800 font-semibold flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-600" />
@@ -116,7 +110,7 @@ export default function DayRow({
 
           <span className="text-gray-200 text-sm shrink-0">·</span>
 
-          {/* Cleaners Summary */}
+          {/* Cleaners Summary with Overload Indicator */}
           <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums min-w-0 overflow-hidden">
             {cleaners.map((cleaner, cIdx) => {
               const cleanerCleanings = activeCleanings.filter(
@@ -125,6 +119,7 @@ export default function DayRow({
               const hasOff = day.cleanings.some(
                 (c) => c.cleaner.id === cleaner.id && c.dayOff
               );
+              const isOverloaded = isCleanerOverloaded(cleaner.id, day.cleanings);
 
               return (
                 <span
@@ -134,10 +129,15 @@ export default function DayRow({
                   {cIdx > 0 && <span className="text-gray-300">·</span>}
                   {hasOff && (
                     <span title={`${cleaner.name} · tentative day off`}>
-                      <AlertCircle className="w-3.5 h-3.5 text-purple-500" />
+                      <Moon className="w-3.5 h-3.5 text-purple-500" />
                     </span>
                   )}
-                  <span>
+                  {isOverloaded && !hasOff && (
+                    <span title={`${cleaner.name} is overloaded (4+ cleanings)`}>
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                    </span>
+                  )}
+                  <span className={isOverloaded && !hasOff ? "text-rose-700 font-medium" : ""}>
                     {cleaner.name} {cleanerCleanings}
                   </span>
                 </span>
@@ -158,7 +158,6 @@ export default function DayRow({
       {/* Expanded Drawer Details */}
       {isExpanded && (
         <div className="border-t border-gray-100 bg-gray-50/30">
-          {/* Day off notices */}
           {day.cleanings.some((c) => c.dayOff) && (
             <div className="flex flex-col gap-2 p-3 border-b border-gray-100 bg-purple-50/20">
               {day.cleanings.map(
@@ -176,19 +175,29 @@ export default function DayRow({
             </div>
           )}
 
-          {/* Cleaner assignment breakdown */}
           {cleaners.map((cleaner) => {
             const assignedCleanings = day.cleanings.filter(
               (c) => c.cleaner.id === cleaner.id && !c.dayOff
             );
+            const isOverloaded = isCleanerOverloaded(cleaner.id, day.cleanings);
+
             return (
               <div
                 key={cleaner.id}
-                className="flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0 bg-white"
+                className={`flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0 ${
+                  isOverloaded ? "bg-rose-50/30" : "bg-white"
+                }`}
               >
-                <span className="text-sm font-semibold text-gray-900 w-24 shrink-0 pt-0.5">
-                  {cleaner.name}
-                </span>
+                <div className="flex items-center gap-1.5 w-24 shrink-0 pt-0.5">
+                  <span className="text-sm font-semibold text-gray-900">
+                    {cleaner.name}
+                  </span>
+                  {isOverloaded && (
+                    <span title="Overloaded (4+ cleanings)">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-1.5 items-center flex-1 min-w-0">
                   {assignedCleanings.length === 0 ? (
                     <span className="text-xs text-gray-300 italic">
@@ -196,10 +205,8 @@ export default function DayRow({
                     </span>
                   ) : (
                     assignedCleanings.map((assignment, idx) => {
-                      const isSameDay = Boolean(
-                        assignment.checkOut && assignment.checkIn
-                      );
-                      const isHighVal = isHighValue(assignment);
+                      const isSameDay = isSameDayTurnover(assignment);
+                      const isHighVal = isHighValueAssignment(assignment);
 
                       return (
                         <span
@@ -241,7 +248,6 @@ export default function DayRow({
             );
           })}
 
-          {/* Drawer Legend */}
           <div className="px-4 py-2.5 border-t border-gray-100 flex gap-4 flex-wrap bg-gray-50 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
               <RefreshCw className="w-3 h-3 text-amber-500" />
@@ -250,6 +256,10 @@ export default function DayRow({
             <span className="flex items-center gap-1.5">
               <Gem className="w-3 h-3 text-emerald-600" />
               high-value (\$2,000+)
+            </span>
+            <span className="flex items-center gap-1.5">
+              <AlertTriangle className="w-3 h-3 text-rose-500" />
+              overloaded (4+ cleanings)
             </span>
           </div>
         </div>
