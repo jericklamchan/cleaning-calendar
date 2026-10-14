@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getUsers } from '@/utils/usersStore';
+import { getUsers } from '@/utils/userStore';
 import UsersTable from '@/components/UsersTable';
 
 async function UsersContent() {

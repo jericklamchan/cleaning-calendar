@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getProperties } from '@/utils/propertiesStore';
+import { getProperties } from '@/utils/propertyStore';
 import PropertiesTable from '@/components/PropertiesTable';
 
 async function PropertiesContent() {

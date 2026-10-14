@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getCleaners } from '@/utils/cleanersStore';
+import { getCleaners } from '@/utils/cleanerStore';
 import CleanersTable from '@/components/CleanersTable';
 
 async function CleanersContent() {
