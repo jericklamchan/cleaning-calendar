@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { DaySchedule, Cleaner } from "@/types/planner";
-import DayRow from "@/components/DayRow";
-import CapacityView from "@/components/CapacityView";
+import DayRow from "@/components/planner/DayRow";
+import CapacityView from "@/components/planner/CapacityView";
 import LegendModal from "@/components/LegendModal";
-import SchedulesView from "@/components/SchedulesView";
+import SchedulesView from "@/components/planner/SchedulesView";
 import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem, HelpCircle } from "lucide-react";
 import { isHighValueAssignment, isSameDayTurnover } from "@/utils/plannerUtils";
 

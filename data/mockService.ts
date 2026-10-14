@@ -29,11 +29,11 @@ export function getMockScheduleForWeek(
     const dateStr = current.toISOString().split("T")[0];
     const dow = daysOfWeek[current.getDay()];
 
-    const cleanings = [];
+    const rawCleanings = [];
 
     if (i === 0) {
       // Sunday Turnover
-      cleanings.push(
+      rawCleanings.push(
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(0), checkOut: { guestName: "Smith", time: "10:00 AM", totalPrice: 2200 }, checkIn: { guestName: "Johnson", time: "4:00 PM", totalPrice: 1500 } },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(1), checkOut: { guestName: "Davis", time: "11:00 AM", totalPrice: 950 } },
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(2), checkOut: { guestName: "Miller", time: "10:00 AM", totalPrice: 1200 }, checkIn: { guestName: "Garcia", time: "3:00 PM", totalPrice: 2400 } },
@@ -45,12 +45,11 @@ export function getMockScheduleForWeek(
       );
     } else if (i === 1) {
       // Monday Peak
-      cleanings.push(
+      rawCleanings.push(
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(8), dayOff: true },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(0), checkOut: { guestName: "Martin", time: "10:00 AM", totalPrice: 1250 }, checkIn: { guestName: "Clark", time: "4:00 PM", totalPrice: 1400 } },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(2), checkOut: { guestName: "Lee", time: "11:00 AM", totalPrice: 900 } },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(9), checkOut: { guestName: "Lewis", time: "10:00 AM", totalPrice: 2500 } },
-        { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(3), checkOut: { guestName: "Young", time: "11:00 AM", totalPrice: 750 } },
         { id: `task-${taskCounter++}`, cleaner: getC(2), property: getP(1), checkOut: { guestName: "Walker", time: "10:00 AM", totalPrice: 1100 }, checkIn: { guestName: "Hall", time: "3:00 PM", totalPrice: 1200 } },
         { id: `task-${taskCounter++}`, cleaner: getC(3), property: getP(4), checkOut: { guestName: "King", time: "10:00 AM", totalPrice: 1450 }, checkIn: { guestName: "Wright", time: "4:00 PM", totalPrice: 2800 } },
         { id: `task-${taskCounter++}`, cleaner: getC(3), property: getP(5), checkOut: { guestName: "Scott", time: "11:00 AM", totalPrice: 850 } },
@@ -59,7 +58,7 @@ export function getMockScheduleForWeek(
       );
     } else if (i === 2) {
       // Tuesday Mid-Week
-      cleanings.push(
+      rawCleanings.push(
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(3), checkOut: { guestName: "Nelson", time: "10:00 AM", totalPrice: 1100 }, checkIn: { guestName: "Carter", time: "4:00 PM", totalPrice: 2250 } },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(4), checkOut: { guestName: "Mitchell", time: "11:00 AM", totalPrice: 800 } },
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(5), checkOut: { guestName: "Perez", time: "10:00 AM", totalPrice: 1300 }, checkIn: { guestName: "Roberts", time: "3:00 PM", totalPrice: 1450 } },
@@ -71,9 +70,9 @@ export function getMockScheduleForWeek(
       );
     } else if (i === 3) {
       // Wednesday
-      cleanings.push(
+      rawCleanings.push(
         { id: `task-${taskCounter++}`, cleaner: getC(3), property: getP(1), dayOff: true },
-        { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(1), checkOut: { guestName: "Stewart", time: "10:00 AM", totalPrice: 1050 } },
+        { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(0), checkOut: { guestName: "Stewart", time: "10:00 AM", totalPrice: 1050 } },
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(2), checkOut: { guestName: "Sanchez", time: "11:00 AM", totalPrice: 890 }, checkIn: { guestName: "Morris", time: "4:00 PM", totalPrice: 2300 } },
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(3), checkOut: { guestName: "Rogers", time: "10:00 AM", totalPrice: 1150 } },
         { id: `task-${taskCounter++}`, cleaner: getC(2), property: getP(4), checkOut: { guestName: "Reed", time: "11:00 AM", totalPrice: 940 }, checkIn: { guestName: "Cook", time: "3:00 PM", totalPrice: 1200 } },
@@ -83,7 +82,7 @@ export function getMockScheduleForWeek(
       );
     } else if (i === 4) {
       // Thursday
-      cleanings.push(
+      rawCleanings.push(
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(8), checkOut: { guestName: "Rivera", time: "10:00 AM", totalPrice: 1400 }, checkIn: { guestName: "Cooper", time: "3:00 PM", totalPrice: 1550 } },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(9), checkOut: { guestName: "Richardson", time: "11:00 AM", totalPrice: 2400 } },
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(0), checkOut: { guestName: "Cox", time: "10:00 AM", totalPrice: 1100 }, checkIn: { guestName: "Howard", time: "4:00 PM", totalPrice: 2750 } },
@@ -95,7 +94,7 @@ export function getMockScheduleForWeek(
       );
     } else if (i === 5) {
       // Friday
-      cleanings.push(
+      rawCleanings.push(
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(6), checkOut: { guestName: "Brooks", time: "10:00 AM", totalPrice: 1350 }, checkIn: { guestName: "Kelly", time: "4:00 PM", totalPrice: 2900 } },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(7), checkOut: { guestName: "Sanders", time: "11:00 AM", totalPrice: 1020 } },
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(8), checkOut: { guestName: "Price", time: "10:00 AM", totalPrice: 1450 }, checkIn: { guestName: "Bennett", time: "3:00 PM", totalPrice: 1600 } },
@@ -104,13 +103,11 @@ export function getMockScheduleForWeek(
         { id: `task-${taskCounter++}`, cleaner: getC(2), property: getP(1), checkOut: { guestName: "Henderson", time: "11:00 AM", totalPrice: 1100 } },
         { id: `task-${taskCounter++}`, cleaner: getC(3), property: getP(2), checkOut: { guestName: "Coleman", time: "10:00 AM", totalPrice: 1250 }, checkIn: { guestName: "Jenkins", time: "3:00 PM", totalPrice: 1400 } },
         { id: `task-${taskCounter++}`, cleaner: getC(4), property: getP(4), checkOut: { guestName: "Powell", time: "10:00 AM", totalPrice: 1400 }, checkIn: { guestName: "Long", time: "4:00 PM", totalPrice: 2500 } },
-        { id: `task-${taskCounter++}`, cleaner: getC(4), property: getP(5), checkOut: { guestName: "Patterson", time: "11:00 AM", totalPrice: 970 } },
-        { id: `task-${taskCounter++}`, cleaner: getC(4), property: getP(6), checkOut: { guestName: "Gomez", time: "10:00 AM", totalPrice: 1150 } },
-        { id: `task-${taskCounter++}`, cleaner: getC(4), property: getP(2), checkOut: { guestName: "Perry", time: "11:00 AM", totalPrice: 930 } }
+        { id: `task-${taskCounter++}`, cleaner: getC(4), property: getP(5), checkOut: { guestName: "Patterson", time: "11:00 AM", totalPrice: 970 } }
       );
     } else if (i === 6) {
       // Saturday
-      cleanings.push(
+      rawCleanings.push(
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(5), checkOut: { guestName: "Hughes", time: "10:00 AM", totalPrice: 2300 }, checkIn: { guestName: "Flores", time: "4:00 PM", totalPrice: 2450 } },
         { id: `task-${taskCounter++}`, cleaner: getC(0), property: getP(6), checkOut: { guestName: "Washington", time: "11:00 AM", totalPrice: 1150 } },
         { id: `task-${taskCounter++}`, cleaner: getC(1), property: getP(7), checkOut: { guestName: "Butler", time: "10:00 AM", totalPrice: 1300 }, checkIn: { guestName: "Simmons", time: "3:00 PM", totalPrice: 1450 } },
@@ -121,6 +118,15 @@ export function getMockScheduleForWeek(
         { id: `task-${taskCounter++}`, cleaner: getC(4), property: getP(2), checkOut: { guestName: "Diaz", time: "10:00 AM", totalPrice: 1350 }, checkIn: { guestName: "Hayes", time: "4:00 PM", totalPrice: 2800 } }
       );
     }
+
+    // Programmatic safety check: deduplicate by property ID (keeping dayOff items)
+    const seenProperties = new Set<string>();
+    const cleanings = rawCleanings.filter((item) => {
+      if (item.dayOff || !item.property?.id) return true;
+      if (seenProperties.has(item.property.id)) return false;
+      seenProperties.add(item.property.id);
+      return true;
+    });
 
     return {
       date: dateStr,
