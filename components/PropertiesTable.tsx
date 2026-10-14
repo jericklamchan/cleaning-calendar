@@ -14,7 +14,6 @@ interface Props {
 }
 
 export default function PropertiesTable({ initialProperties }: Props) {
-  const [properties] = useState<Property[]>(initialProperties);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,52 +65,58 @@ export default function PropertiesTable({ initialProperties }: Props) {
         </button>
       </div>
 
-      {/* Properties Table Container */}
-      <TableContainer>
-        <THead>
-          <tr>
-            <th className="py-2.5 px-4">Property Name</th>
-            <th className="py-2.5 px-4">Code</th>
-            <th className="py-2.5 px-4">City / Market</th>
-            <th className="py-2.5 px-4 text-center">Bedrooms</th>
-            <th className="py-2.5 px-4 text-right">Default Payout</th>
-            <th className="py-2.5 px-4 text-center">Status</th>
-            <th className="py-2.5 px-4 text-right">Actions</th>
-          </tr>
-        </THead>
-        <TBody>
-          {properties.map((property) => (
-            <tr key={property.id} className="hover:bg-gray-50/50 transition-colors">
-              <td className="py-3 px-4 font-medium text-gray-900">{property.name}</td>
-              <td className="py-3 px-4 text-gray-500 font-mono text-[11px]">{property.code || '—'}</td>
-              <td className="py-3 px-4 text-gray-600">{property.city}</td>
-              <td className="py-3 px-4 text-center">{property.bedrooms} BR</td>
-              <td className="py-3 px-4 text-right font-medium">${property.defaultPayout}</td>
-              <td className="py-3 px-4 text-center">
-                <StatusBadge active={property.active} />
-              </td>
-              <td className="py-3 px-4 text-right">
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => setEditingProperty(property)}
-                    className="p-1 text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
-                    title="Edit Property"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(property.id, property.name)}
-                    className="p-1 text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
-                    title="Delete Property"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </td>
+      {/* Properties Table Container or Empty State */}
+      {initialProperties.length === 0 ? (
+        <div className="border border-gray-200/85 rounded-xl bg-white py-12 text-center text-xs text-gray-500 shadow-xs">
+          No properties found. Click &quot;Add Property&quot; to get started.
+        </div>
+      ) : (
+        <TableContainer>
+          <THead>
+            <tr>
+              <th className="py-2.5 px-4">Property Name</th>
+              <th className="py-2.5 px-4">Code</th>
+              <th className="py-2.5 px-4">City / Market</th>
+              <th className="py-2.5 px-4 text-center">Bedrooms</th>
+              <th className="py-2.5 px-4 text-right">Default Payout</th>
+              <th className="py-2.5 px-4 text-center">Status</th>
+              <th className="py-2.5 px-4 text-right">Actions</th>
             </tr>
-          ))}
-        </TBody>
-      </TableContainer>
+          </THead>
+          <TBody>
+            {initialProperties.map((property) => (
+              <tr key={property.id} className="hover:bg-gray-50/50 transition-colors">
+                <td className="py-3 px-4 font-medium text-gray-900">{property.name}</td>
+                <td className="py-3 px-4 text-gray-500 font-mono text-[11px]">{property.code || '—'}</td>
+                <td className="py-3 px-4 text-gray-600">{property.city}</td>
+                <td className="py-3 px-4 text-center">{property.bedrooms} BR</td>
+                <td className="py-3 px-4 text-right font-medium">${property.defaultPayout}</td>
+                <td className="py-3 px-4 text-center">
+                  <StatusBadge active={property.active} />
+                </td>
+                <td className="py-3 px-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => setEditingProperty(property)}
+                      className="p-1 text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
+                      title="Edit Property"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(property.id, property.name)}
+                      className="p-1 text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                      title="Delete Property"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </TBody>
+        </TableContainer>
+      )}
 
       {/* Shared Modal Dialog */}
       <Modal

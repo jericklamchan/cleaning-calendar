@@ -1,33 +1,14 @@
-import fs from 'fs/promises';
-import path from 'path';
 import { CompanySettings, defaultSettings } from '@/types/settings';
+import { getJsonData, saveJsonData } from '@/utils/jsonStore';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const FILE_PATH = path.join(DATA_DIR, 'settings.json');
-
-// Ensure the data directory and file exist
-async function ensureFileExists() {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    await fs.access(FILE_PATH);
-  } catch {
-    await fs.writeFile(FILE_PATH, JSON.stringify(defaultSettings, null, 2), 'utf-8');
-  }
-}
+const FILE_NAME = 'settings.json';
 
 export async function getSettings(): Promise<CompanySettings> {
-  await ensureFileExists();
-  try {
-    const data = await fs.readFile(FILE_PATH, 'utf-8');
-    return JSON.parse(data) as CompanySettings;
-  } catch (error) {
-    console.error('Failed to read settings cache, falling back to defaults:', error);
-    return defaultSettings;
-  }
+  // Leverages jsonStore to fetch the object or fall back to defaultSettings
+  return getJsonData<CompanySettings>(FILE_NAME, defaultSettings);
 }
 
 export async function saveSettings(newSettings: Partial<CompanySettings>): Promise<CompanySettings> {
-  await ensureFileExists();
   const current = await getSettings();
   
   const updated: CompanySettings = {
@@ -36,6 +17,7 @@ export async function saveSettings(newSettings: Partial<CompanySettings>): Promi
     updatedAt: new Date().toISOString(),
   };
 
-  await fs.writeFile(FILE_PATH, JSON.stringify(updated, null, 2), 'utf-8');
+  // Leverages jsonStore to persist the updated object safely
+  await saveJsonData(FILE_NAME, updated);
   return updated;
 }

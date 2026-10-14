@@ -1,9 +1,5 @@
-// utils/propertiesStore.ts
-import fs from 'fs/promises';
-import path from 'path';
 import { Property } from '@/types/property';
-
-const FILE_PATH = path.join(process.cwd(), 'data', 'properties.json');
+import { getJsonData, saveJsonData } from '@/utils/jsonStore';
 
 const INITIAL_PROPERTIES: Property[] = [
   { id: 'p1', name: 'Downtown Loft 409', code: 'DT-409', city: 'Los Angeles', bedrooms: 2, defaultPayout: 180, active: true },
@@ -12,17 +8,10 @@ const INITIAL_PROPERTIES: Property[] = [
 ];
 
 export async function getProperties(): Promise<Property[]> {
-  try {
-    const data = await fs.readFile(FILE_PATH, 'utf8');
-    return JSON.parse(data);
-  } catch {
-    await fs.mkdir(path.dirname(FILE_PATH), { recursive: true });
-    await fs.writeFile(FILE_PATH, JSON.stringify(INITIAL_PROPERTIES, null, 2));
-    return INITIAL_PROPERTIES;
-  }
+  // Pass INITIAL_PROPERTIES as the fallback default (2 arguments total)
+  return getJsonData<Property[]>('properties.json', INITIAL_PROPERTIES);
 }
 
 export async function saveProperties(properties: Property[]): Promise<void> {
-  await fs.mkdir(path.dirname(FILE_PATH), { recursive: true });
-  await fs.writeFile(FILE_PATH, JSON.stringify(properties, null, 2));
+  await saveJsonData('properties.json', properties);
 }

@@ -14,7 +14,6 @@ interface Props {
 }
 
 export default function CleanersTable({ initialCleaners }: Props) {
-  const [cleaners] = useState<Cleaner[]>(initialCleaners);
   const [editingCleaner, setEditingCleaner] = useState<Cleaner | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,57 +65,63 @@ export default function CleanersTable({ initialCleaners }: Props) {
         </button>
       </div>
 
-      {/* Cleaners Table Container */}
-      <TableContainer>
-        <THead>
-          <tr>
-            <th className="py-2.5 px-4">Name</th>
-            <th className="py-2.5 px-4">Contact Info</th>
-            <th className="py-2.5 px-4">Notes</th>
-            <th className="py-2.5 px-4 text-center">Status</th>
-            <th className="py-2.5 px-4 text-right">Actions</th>
-          </tr>
-        </THead>
-        <TBody>
-          {cleaners.map((cleaner) => (
-            <tr key={cleaner.id} className="hover:bg-gray-50/50 transition-colors">
-              <td className="py-3 px-4 font-medium text-gray-900">{cleaner.name}</td>
-              <td className="py-3 px-4 text-gray-600 space-y-0.5">
-                <div className="flex items-center gap-1.5">
-                  <Phone className="w-3 h-3 text-gray-400" />
-                  <span>{cleaner.phone || 'N/A'}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Mail className="w-3 h-3 text-gray-400" />
-                  <span>{cleaner.email || 'N/A'}</span>
-                </div>
-              </td>
-              <td className="py-3 px-4 text-gray-500 max-w-xs truncate">{cleaner.notes || '—'}</td>
-              <td className="py-3 px-4 text-center">
-                <StatusBadge active={cleaner.active} />
-              </td>
-              <td className="py-3 px-4 text-right">
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => setEditingCleaner(cleaner)}
-                    className="p-1 text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
-                    title="Edit Cleaner"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(cleaner.id, cleaner.name)}
-                    className="p-1 text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
-                    title="Delete Cleaner"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </td>
+      {/* Cleaners Table Container or Empty State */}
+      {initialCleaners.length === 0 ? (
+        <div className="border border-gray-200/85 rounded-xl bg-white py-12 text-center text-xs text-gray-500 shadow-xs">
+          No cleaners found. Click &quot;Add Cleaner&quot; to get started.
+        </div>
+      ) : (
+        <TableContainer>
+          <THead>
+            <tr>
+              <th className="py-2.5 px-4">Name</th>
+              <th className="py-2.5 px-4">Contact Info</th>
+              <th className="py-2.5 px-4">Notes</th>
+              <th className="py-2.5 px-4 text-center">Status</th>
+              <th className="py-2.5 px-4 text-right">Actions</th>
             </tr>
-          ))}
-        </TBody>
-      </TableContainer>
+          </THead>
+          <TBody>
+            {initialCleaners.map((cleaner) => (
+              <tr key={cleaner.id} className="hover:bg-gray-50/50 transition-colors">
+                <td className="py-3 px-4 font-medium text-gray-900">{cleaner.name}</td>
+                <td className="py-3 px-4 text-gray-600 space-y-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="w-3 h-3 text-gray-400" />
+                    <span>{cleaner.phone || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="w-3 h-3 text-gray-400" />
+                    <span>{cleaner.email || 'N/A'}</span>
+                  </div>
+                </td>
+                <td className="py-3 px-4 text-gray-500 max-w-xs truncate">{cleaner.notes || '—'}</td>
+                <td className="py-3 px-4 text-center">
+                  <StatusBadge active={cleaner.active} />
+                </td>
+                <td className="py-3 px-4 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => setEditingCleaner(cleaner)}
+                      className="p-1 text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
+                      title="Edit Cleaner"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(cleaner.id, cleaner.name)}
+                      className="p-1 text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                      title="Delete Cleaner"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </TBody>
+        </TableContainer>
+      )}
 
       {/* Shared Modal Dialog */}
       <Modal
