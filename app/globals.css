@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light; /* Forces the browser engine and Next.js transitions to stay in light mode */
   --background: #f8f7f4;
   --foreground: #171717;
 }
@@ -12,8 +13,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  background-color: #f8f7f4 !important;
+  color-scheme: light;
+}
+
 body {
-  background-color: #f8f7f4;
+  background-color: #f8f7f4 !important;
   color: #111827;
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
 }
