@@ -1,68 +1,86 @@
-# 🧹 Cleaning Calendar
+# Operations Planner & Cleaning Management Dashboard
 
-A modern, responsive property and cleaning operations management web application built with **Next.js App Router**, **TypeScript**, and **Tailwind CSS v4**.
+A production-grade, full-stack operations management dashboard designed for short-term rental property portfolios. Built with modern web technologies, it features dynamic weekly scheduling, robust data caching, and automated conflict-resolution pipelines for cleaners, properties, and team operations.
 
-## ✨ Features
+---
 
-- **Weekly Planner View:** Interactive calendar breakdown of cleaning operations organized by week.
-- **Accordion Day Rows:** Expandable daily drawers to check individual cleaner availability, tentative days off, and turnover schedules.
-- **Clean Architecture:** Modular component structure following DRY principles and strict separation of concerns.
-- **Custom Design System:** Tailored warm off-white layout (`#f8f7f4`) with refined borders (`#e8e4dc`) and optimized Geist typography.
+## 🚀 Key Features
+
+* **Interactive Weekly Planner Matrix:** Real-time scheduling grid with automated turnover tracking, check-in/check-out tracking, and day-off management.
+* **Smart Deduplication & Safety Filters:** Programmatic validation layers ensuring properties never experience double-booking or overlapping cleaning assignments on the same calendar day.
+* **Multi-Property & Multi-Cleaner Scaling:** Supports dynamic data sets across major metropolitan portfolios (Los Angeles, New York City, Oslo) with modular roster management.
+* **High-Performance Architecture:** Optimized for Next.js with fine-grained caching components and suspense boundaries for instant navigation.
+* **Comprehensive Administration Suite:** Centralized tables and forms for managing team permissions (Admins, Operations Managers), cleaner rosters, and property configurations.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Language:** TypeScript
-- **Icons:** `lucide-react`
+* **Framework:** Next.js (App Router)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS
+* **State Management & Caching:** Custom JSON storage layers with server-side caching (`lib/cache.ts`)
+* **Icons & UI Utilities:** Modular component architecture (`components/planner/`, `components/settings/`, `components/navigation/`)
 
 ---
 
-## 📁 Project Directory Structure
+## 📂 Project Architecture
 
 ```text
-├── app/                  # Next.js App Router pages and layouts
-│   ├── layout.tsx        # Root layout with fonts and global wrapper
-│   ├── page.tsx          # Root redirect to active week planner
-│   ├── globals.css       # Tailwind v4 import and CSS theme variables
-│   └── planner/
-│       └── [week]/       # Dynamic week route page
-├── components/           # Reusable UI components
-│   ├── Navbar.tsx        # Global navigation header
-│   ├── Planner.tsx       # Main client-side planner view
-│   └── DayRow.tsx        # Collapsible day accordion row
-├── data/                 # Mock data fixtures and stores
-│   └── mockPlanner.ts    # Static cleaning schedules and cleaner data
-└── types/                # Shared TypeScript domain models
-    └── planner.ts        # Core interfaces (Cleaner, DaySchedule, etc.)
+src/
+├── app/                      # Next.js App Router pages and layouts
+│   ├── dashboard/            # Operations dashboard & route segments
+│   └── layout.tsx            # Root layout with global navigation wrapper
+├── components/               # Modular UI components
+│   ├── navigation/           # Global layout routing (Navbar)
+│   ├── planner/              # Weekly calendar, grid views, and scheduling logic
+│   └── settings/             # Administrative tables and configuration forms
+├── lib/                      # Shared core infrastructure logic
+│   ├── cache.ts              # Data caching and retrieval layers
+│   └── utils.ts              # Pure helper functions and date calculation math
+├── stores/                   # State handlers and data fetching layers
+│   ├── cleanerStore.ts       # Cleaner roster operations
+│   ├── propertyStore.ts      # Property portfolio dataset handlers
+│   └── userStore.ts          # Team membership and role management
+└── types/                    # TypeScript interfaces and type definitions
 ```
 
 ---
 
-## 🚀 Getting Started Locally
+## ⚙️ Getting Started
 
 ### Prerequisites
-Make sure you have [Node.js](https://nodejs.org/) (version 18+ recommended) installed on your machine.
+Make sure you have **Node.js** (v18+ recommended) and **npm** installed on your machine.
 
 ### Installation
 
-1. **Clone the repository:**
+1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/cleaning-calendar.git
+   git clone https://github.com/jericklamchan/cleaning-calendar.git
    cd cleaning-calendar
    ```
 
-2. **Install dependencies:**
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. **Run the development server:**
+3. Run the development server:
    ```bash
    npm run dev
    ```
 
-4. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000). The root URL will automatically redirect you to the active demo week planner.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+---
+
+## 🔒 Security & Best Practices
+
+* **No Hardcoded Secrets:** All sensitive credentials, environment variables, and platform keys are securely decoupled using `.env` configurations (excluded via `.gitignore`).
+* **Robust Error Boundaries:** Server-side file operations are safely isolated within React Suspense boundaries to maintain optimal UI responsiveness and prevent prerendering blockages.
+
+---
+
+## 📄 License
+
+This project is protected under standard copyright laws. All rights reserved. Code is provided for portfolio review and demonstration purposes only.
