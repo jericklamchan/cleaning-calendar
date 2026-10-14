@@ -158,12 +158,12 @@ export default function UsersTable({ initialUsers }: Props) {
               <label className="block text-xs font-semibold text-gray-800 mb-1">Role</label>
               <select
                 name="role"
-                defaultValue={editingUser?.role || 'manager'}
+                defaultValue={editingUser?.role || 'Operations Manager'}
                 className="w-full rounded-md border border-gray-200 px-3 py-1.5 text-xs focus:border-blue-500 focus:outline-none bg-white capitalize"
               >
-                <option value="admin">Admin</option>
-                <option value="manager">Manager</option>
-                <option value="viewer">Viewer</option>
+                <option value="Admin">Admin</option>
+                <option value="Operations Manager">Operations Manager</option>
+                <option value="Viewer">Viewer</option>
               </select>
             </div>
             <div>

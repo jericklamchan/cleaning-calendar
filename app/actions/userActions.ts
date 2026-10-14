@@ -11,7 +11,7 @@ export async function addUserAction(formData: FormData) {
     id: crypto.randomUUID(),
     name: (formData.get('name') as string)?.trim() || 'New User',
     email: (formData.get('email') as string)?.trim() || '',
-    role: (formData.get('role') as User['role']) || 'manager',
+    role: (formData.get('role') as User['role']) || 'Operations Manager',
     active: formData.get('active') === 'true',
   };
 
