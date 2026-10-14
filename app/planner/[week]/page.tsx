@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Planner from "@/components/Planner";
+import WeekView from "@/components/WeekView";
 import { mockCleaners, getMockScheduleForWeek } from "@/data/mockPlanner";
 
 interface PageProps {
@@ -32,7 +32,7 @@ async function PlannerLoader({ params }: PageProps) {
   const nextHref = `/planner/${nextDate.toISOString().split("T")[0]}`;
 
   return (
-    <Planner 
+    <WeekView 
       schedule={schedule} 
       cleaners={mockCleaners} 
       weekLabel={weekLabel}

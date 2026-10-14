@@ -12,7 +12,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             <Link
               className="text-sm font-medium text-gray-900"
-              href="/planner"
+              href="/"
             >
               Planner
             </Link>
