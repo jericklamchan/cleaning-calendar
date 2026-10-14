@@ -17,6 +17,9 @@ export default function DayRow({
   isExpanded,
   onToggle,
 }: DayRowProps) {
+  // Total cleanings for the day
+  const totalCleanings = day.cleanings.filter(c => !c.dayOff).length;
+
   return (
     <div
       className={`bg-white rounded-xl border overflow-hidden ${
@@ -57,15 +60,19 @@ export default function DayRow({
         {/* Day Summary Content */}
         <div className="flex-1 min-w-0 px-5 py-4 flex items-center gap-3">
           <div className="flex items-center gap-4 shrink-0 text-base font-medium tabular-nums">
-            <span className="text-gray-700 font-semibold">🧹 0</span>
+            <span className="text-gray-700 font-semibold">🧹 {totalCleanings}</span>
           </div>
           <span className="text-gray-200 text-sm shrink-0">·</span>
           
           <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums min-w-0 overflow-hidden">
             {cleaners.map((cleaner, cIdx) => {
+              const cleanerCleanings = day.cleanings.filter(
+                (c) => c.cleaner.id === cleaner.id && !c.dayOff
+              ).length;
               const hasOff = day.cleanings.some(
                 (c) => c.cleaner.id === cleaner.id && c.dayOff
               );
+
               return (
                 <span key={cleaner.id} className="flex items-center gap-1 shrink-0">
                   {cIdx > 0 && <span className="text-gray-300">·</span>}
@@ -74,7 +81,7 @@ export default function DayRow({
                       ⚠
                     </span>
                   )}
-                  <span>{cleaner.name} 0</span>
+                  <span>{cleaner.name} {cleanerCleanings}</span>
                 </span>
               );
             })}
@@ -86,16 +93,15 @@ export default function DayRow({
             title="Add manual cleaning"
             className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 shrink-0"
             onClick={(e) => {
-              e.stopPropagation(); // Prevent toggling the accordion
-              // Add manual cleaning handler here
+              e.stopPropagation();
             }}
           >
             +
           </button>
 
-          {day.cleanings.length > 0 && (
+          {totalCleanings > 0 && (
             <span className="text-xs font-normal px-2.5 py-0.5 rounded-full shrink-0 bg-amber-100 text-amber-700">
-              {day.cleanings.length}
+              {totalCleanings}
             </span>
           )}
           <span className="text-base text-gray-300 hover:text-gray-500 shrink-0">▾</span>
@@ -120,17 +126,45 @@ export default function DayRow({
             )}
           </div>
           
-          {cleaners.map((cleaner) => (
-            <div
-              key={cleaner.id}
-              className="flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0"
-            >
-              <span className="text-sm font-semibold text-gray-900 w-24 shrink-0 pt-0.5">
-                {cleaner.name}
-              </span>
-              <div className="flex flex-wrap gap-1.5 items-center flex-1 min-w-0"></div>
-            </div>
-          ))}
+          {cleaners.map((cleaner) => {
+            const assignedCleanings = day.cleanings.filter(
+                (c) => c.cleaner.id === cleaner.id && !c.dayOff
+            );
+            return (
+                <div
+                key={cleaner.id}
+                className="flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0"
+                >
+                <span className="text-sm font-semibold text-gray-900 w-24 shrink-0 pt-0.5">
+                    {cleaner.name}
+                </span>
+                <div className="flex flex-wrap gap-1.5 items-center flex-1 min-w-0">
+                    {assignedCleanings.length === 0 ? (
+                    <span className="text-xs text-gray-300 italic">No assignments</span>
+                    ) : (
+                    assignedCleanings.map((assignment, idx) => {
+                        const isSameDayTurnover = Boolean(assignment.checkOut && assignment.checkIn);
+
+                        return (
+                        <span
+                            key={idx}
+                            className={`text-xs px-2.5 py-1 rounded font-medium flex items-center gap-1.5 ${
+                            isSameDayTurnover
+                                ? "bg-amber-100 text-amber-800 border border-amber-200"
+                                : "bg-gray-100 text-gray-700"
+                            }`}
+                            title={`${assignment.property?.name || 'Property'}${assignment.checkOut ? ` · Out: \${assignment.checkOut.time}` : ''}${assignment.checkIn ? ` · In: \${assignment.checkIn.time}` : ''}`}
+                        >
+                            {isSameDayTurnover && <span className="w-1.5 h-1.5 rounded-sm bg-amber-400"></span>}
+                            {assignment.property?.name || `Property #${idx + 1}`}
+                        </span>
+                        );
+                    })
+                    )}
+                </div>
+                </div>
+            );
+          })}
 
           <div className="px-4 py-2 border-t border-gray-100 flex gap-4 flex-wrap">
             <span className="text-xs text-gray-400 flex items-center gap-1">

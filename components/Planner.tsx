@@ -25,6 +25,12 @@ export default function Planner({
     setExpandedDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
+  // Compute total weekly cleanings dynamically
+  const totalWeekCleanings = schedule.reduce(
+    (acc, day) => acc + day.cleanings.filter((c) => !c.dayOff).length,
+    0
+  );
+
   return (
     <div className="min-h-screen bg-[#f8f7f4]">
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
@@ -58,7 +64,7 @@ export default function Planner({
 
           {/* Quick Counter Badge */}
           <div className="flex items-center gap-6 bg-white border border-[#e8e4dc] rounded-xl px-5 py-2.5 w-fit mt-3">
-            <span>🧹 <strong>0</strong></span>
+            <span>🧹 <strong>{totalWeekCleanings}</strong></span>
           </div>
         </div>
 
