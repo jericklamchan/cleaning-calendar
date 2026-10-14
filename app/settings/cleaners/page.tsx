@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { getCleaners } from '@/utils/cleanerStore';
-import CleanersTable from '@/components/CleanersTable';
+import { getCleaners } from '@/stores/cleanerStore';
+import CleanersTable from '@/components/settings/CleanersTable';
 
 async function CleanersContent() {
   const cleaners = await getCleaners();

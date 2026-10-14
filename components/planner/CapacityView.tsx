@@ -12,7 +12,7 @@ import {
   getCleanerWeeklyCapacity,
   isHighValueAssignment,
   isSameDayTurnover,
-} from "@/utils/plannerUtils";
+} from "@/lib/plannerUtils";
 
 interface CapacityViewProps {
   schedule: DaySchedule[];

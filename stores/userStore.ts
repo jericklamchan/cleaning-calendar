@@ -1,5 +1,5 @@
 import { User } from '@/types/user';
-import { getJsonData, saveJsonData } from '@/utils/jsonStore';
+import { getJsonData, saveJsonData } from '@/stores/jsonStore';
 
 const INITIAL_USERS: User[] = [
   { id: 'u1', name: 'Jerick Chan', email: 'jerick@example.com', role: 'Admin', active: true, lastLogin: '2026-10-14' },

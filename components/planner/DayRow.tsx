@@ -15,7 +15,7 @@ import {
   isHighValueAssignment,
   isSameDayTurnover,
   isCleanerOverloaded,
-} from "@/utils/plannerUtils";
+} from "@/lib/plannerUtils";
 
 interface DayRowProps {
   day: DaySchedule;

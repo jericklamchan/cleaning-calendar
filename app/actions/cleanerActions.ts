@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getCleaners, saveCleaners } from '@/utils/cleanerStore';
+import { getCleaners, saveCleaners } from '@/stores/cleanerStore';
 import { Cleaner } from '@/types/cleaner';
 
 export async function addCleanerAction(formData: FormData) {

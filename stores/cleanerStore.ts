@@ -1,5 +1,5 @@
 import { Cleaner } from '@/types/cleaner';
-import { getJsonData, saveJsonData } from '@/utils/jsonStore';
+import { getJsonData, saveJsonData } from '@/stores/jsonStore';
 
 const FILE_NAME = 'cleaners.json';
 

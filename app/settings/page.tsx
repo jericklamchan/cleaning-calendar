@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { getSettings } from '@/utils/settingsCache';
-import SettingsForm from '@/components/SettingsForm';
+import { getSettings } from '@/lib/settingsCache';
+import SettingsForm from '@/components/settings/SettingsForm';
 
 async function SettingsContent() {
   const initialSettings = await getSettings();

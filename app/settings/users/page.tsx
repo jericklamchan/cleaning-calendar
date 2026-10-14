@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { getUsers } from '@/utils/userStore';
-import UsersTable from '@/components/UsersTable';
+import { getUsers } from '@/stores/userStore';
+import UsersTable from '@/components/settings/UsersTable';
 
 async function UsersContent() {
   const users = await getUsers();

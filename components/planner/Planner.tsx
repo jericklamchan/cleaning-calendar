@@ -7,7 +7,7 @@ import CapacityView from "@/components/planner/CapacityView";
 import LegendModal from "@/components/LegendModal";
 import SchedulesView from "@/components/planner/SchedulesView";
 import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem, HelpCircle } from "lucide-react";
-import { isHighValueAssignment, isSameDayTurnover } from "@/utils/plannerUtils";
+import { isHighValueAssignment, isSameDayTurnover } from "@/lib/plannerUtils";
 
 interface PlannerClientProps {
   schedule: DaySchedule[];

@@ -1,5 +1,5 @@
 import { Property } from '@/types/property';
-import { getJsonData, saveJsonData } from '@/utils/jsonStore';
+import { getJsonData, saveJsonData } from '@/stores/jsonStore';
 
 const FILE_NAME = 'properties.json';
 

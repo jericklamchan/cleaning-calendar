@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getUsers, saveUsers } from '@/utils/userStore';
+import { getUsers, saveUsers } from '@/stores/userStore';
 import { User } from '@/types/user';
 
 export async function addUserAction(formData: FormData) {

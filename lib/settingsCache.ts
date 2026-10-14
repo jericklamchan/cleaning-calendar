@@ -1,5 +1,5 @@
 import { GlobalSettings, defaultSettings } from '@/types/settings';
-import { getJsonData, saveJsonData } from '@/utils/jsonStore';
+import { getJsonData, saveJsonData } from '@/stores/jsonStore';
 
 const FILE_NAME = 'settings.json';
 

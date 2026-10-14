@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getProperties, saveProperties } from '@/utils/propertyStore';
+import { getProperties, saveProperties } from '@/stores/propertyStore';
 import { Property } from '@/types/property';
 
 export async function addPropertyAction(formData: FormData) {

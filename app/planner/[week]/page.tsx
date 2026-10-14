@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Planner from "@/components/planner/Planner";
-import { getCleaners } from "@/utils/cleanerStore";
-import { getProperties } from "@/utils/propertyStore";
+import { getCleaners } from "@/stores/cleanerStore";
+import { getProperties } from "@/stores/propertyStore";
 import { getMockScheduleForWeek } from "@/data/mockService";
 
 interface PageProps {
