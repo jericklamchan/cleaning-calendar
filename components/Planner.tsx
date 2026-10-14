@@ -1,8 +1,10 @@
+// components/Planner.tsx
 "use client";
 
 import { useState } from "react";
 import { DaySchedule, Cleaner } from "@/types/planner";
 import DayRow from "@/components/DayRow";
+import { ChevronLeft, ChevronRight, Sparkles, RefreshCw } from "lucide-react";
 
 interface PlannerClientProps {
   schedule: DaySchedule[];
@@ -25,9 +27,15 @@ export default function Planner({
     setExpandedDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
-  // Compute total weekly cleanings dynamically
+  // Compute total weekly cleanings and same-day turnovers
   const totalWeekCleanings = schedule.reduce(
     (acc, day) => acc + day.cleanings.filter((c) => !c.dayOff).length,
+    0
+  );
+
+  const totalWeekSameDayTurnovers = schedule.reduce(
+    (acc, day) =>
+      acc + day.cleanings.filter((c) => !c.dayOff && c.checkOut && c.checkIn).length,
     0
   );
 
@@ -39,12 +47,20 @@ export default function Planner({
         <div className="mb-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <a href={prevHref} className="text-xl font-light text-gray-300 hover:text-gray-600 transition-colors">
-                ←
+              <a
+                href={prevHref}
+                className="p-1.5 rounded-lg border border-[#e8e4dc] bg-white text-gray-500 hover:bg-gray-50 transition-colors"
+                aria-label="Previous week"
+              >
+                <ChevronLeft className="w-5 h-5" />
               </a>
               <h1 className="text-3xl font-bold text-gray-900 mx-4">{weekLabel}</h1>
-              <a href={nextHref} className="text-xl font-light text-gray-300 hover:text-gray-600 transition-colors">
-                →
+              <a
+                href={nextHref}
+                className="p-1.5 rounded-lg border border-[#e8e4dc] bg-white text-gray-500 hover:bg-gray-50 transition-colors"
+                aria-label="Next week"
+              >
+                <ChevronRight className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -63,8 +79,16 @@ export default function Planner({
           </div>
 
           {/* Quick Counter Badge */}
-          <div className="flex items-center gap-6 bg-white border border-[#e8e4dc] rounded-xl px-5 py-2.5 w-fit mt-3">
-            <span>🧹 <strong>{totalWeekCleanings}</strong></span>
+          <div className="flex items-center gap-3 bg-white border border-[#e8e4dc] rounded-xl px-5 py-2.5 w-fit mt-3 text-sm text-gray-700">
+            <span className="flex items-center gap-1.5 font-medium">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <strong>{totalWeekCleanings}</strong> cleanings
+            </span>
+            <span className="text-gray-300">·</span>
+            <span className="text-amber-800 flex items-center gap-1.5 font-medium">
+              <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
+              <strong>{totalWeekSameDayTurnovers}</strong> same-day turnovers
+            </span>
           </div>
         </div>
 

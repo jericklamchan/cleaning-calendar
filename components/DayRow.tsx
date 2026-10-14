@@ -1,6 +1,15 @@
+// components/DayRow.tsx
 "use client";
 
 import { DaySchedule, Cleaner } from "@/types/planner";
+import {
+  ChevronDown,
+  Sparkles,
+  RefreshCw,
+  AlertCircle,
+  Moon,
+  Home,
+} from "lucide-react";
 
 interface DayRowProps {
   day: DaySchedule;
@@ -17,18 +26,21 @@ export default function DayRow({
   isExpanded,
   onToggle,
 }: DayRowProps) {
-  // Total cleanings for the day
-  const totalCleanings = day.cleanings.filter(c => !c.dayOff).length;
+  const activeCleanings = day.cleanings.filter((c) => !c.dayOff);
+  const totalCleanings = activeCleanings.length;
+  const sameDayTurnoversCount = activeCleanings.filter(
+    (c) => c.checkOut && c.checkIn
+  ).length;
 
   return (
     <div
-      className={`bg-white rounded-xl border overflow-hidden ${
+      className={`bg-white rounded-xl border overflow-hidden transition-all ${
         isHighlighted ? "border-green-300" : "border-[#e8e4dc]"
       }`}
     >
       {/* Day Header Row */}
       <div
-        className="flex cursor-pointer hover:bg-gray-50 transition-colors duration-100"
+        className="flex cursor-pointer hover:bg-gray-50 transition-colors duration-100 items-center"
         onClick={onToggle}
       >
         {/* Date Block */}
@@ -55,120 +67,158 @@ export default function DayRow({
           </span>
         </div>
 
-        <div className={`w-1 shrink-0 ${isHighlighted ? "bg-green-500" : ""}`} />
+        <div
+          className={`w-1 shrink-0 self-stretch ${
+            isHighlighted ? "bg-green-500" : ""
+          }`}
+        />
 
         {/* Day Summary Content */}
         <div className="flex-1 min-w-0 px-5 py-4 flex items-center gap-3">
-          <div className="flex items-center gap-4 shrink-0 text-base font-medium tabular-nums">
-            <span className="text-gray-700 font-semibold">🧹 {totalCleanings}</span>
+          {/* Cleaning Stats & Same-Day Count (Icon + Number only) */}
+          <div className="flex items-center gap-2 shrink-0 text-sm font-medium tabular-nums">
+            <span className="text-gray-800 font-semibold flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              {totalCleanings}
+            </span>
+
+            {sameDayTurnoversCount > 0 && (
+              <span
+                className="text-amber-800 bg-amber-100/80 border border-amber-200/80 px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1"
+                title={`${sameDayTurnoversCount} same-day turnover(s)`}
+              >
+                <RefreshCw className="w-3 h-3 text-amber-600" />
+                {sameDayTurnoversCount}
+              </span>
+            )}
           </div>
+
           <span className="text-gray-200 text-sm shrink-0">·</span>
-          
+
+          {/* Cleaners Summary */}
           <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums min-w-0 overflow-hidden">
             {cleaners.map((cleaner, cIdx) => {
-              const cleanerCleanings = day.cleanings.filter(
-                (c) => c.cleaner.id === cleaner.id && !c.dayOff
+              const cleanerCleanings = activeCleanings.filter(
+                (c) => c.cleaner.id === cleaner.id
               ).length;
               const hasOff = day.cleanings.some(
                 (c) => c.cleaner.id === cleaner.id && c.dayOff
               );
 
               return (
-                <span key={cleaner.id} className="flex items-center gap-1 shrink-0">
+                <span
+                  key={cleaner.id}
+                  className="flex items-center gap-1 shrink-0"
+                >
                   {cIdx > 0 && <span className="text-gray-300">·</span>}
                   {hasOff && (
-                    <span className="text-purple-500" title={`${cleaner.name} · tentative day off`}>
-                      ⚠
+                    <span title={`${cleaner.name} · tentative day off`}>
+                      <AlertCircle className="w-3.5 h-3.5 text-purple-500" />
                     </span>
                   )}
-                  <span>{cleaner.name} {cleanerCleanings}</span>
+                  <span>
+                    {cleaner.name} {cleanerCleanings}
+                  </span>
                 </span>
               );
             })}
           </div>
 
           <div className="flex-1" />
-          
-          <button
-            title="Add manual cleaning"
-            className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 shrink-0"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            +
-          </button>
 
-          {totalCleanings > 0 && (
-            <span className="text-xs font-normal px-2.5 py-0.5 rounded-full shrink-0 bg-amber-100 text-amber-700">
-              {totalCleanings}
-            </span>
-          )}
-          <span className="text-base text-gray-300 hover:text-gray-500 shrink-0">▾</span>
+          <ChevronDown
+            className={`w-5 h-5 text-gray-400 transition-transform duration-200 shrink-0 ${
+              isExpanded ? "rotate-180 text-gray-600" : ""
+            }`}
+          />
         </div>
       </div>
 
       {/* Expanded Drawer Details */}
       {isExpanded && (
-        <div className="border-t border-gray-100">
-          <div className="flex flex-col gap-3 p-3 border-b border-gray-100">
-            {day.cleanings.map(
-              (c, i) =>
-                c.dayOff && (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 px-3 py-2 rounded-r-lg border-l-2 text-xs font-normal bg-purple-50/50 border-purple-400 text-purple-800"
-                  >
-                    <span aria-hidden="true">🌙</span>
-                    <span className="flex-1">{c.cleaner.name} · tentative day off</span>
-                  </div>
-                )
-            )}
-          </div>
-          
+        <div className="border-t border-gray-100 bg-gray-50/30">
+          {/* Day off notices */}
+          {day.cleanings.some((c) => c.dayOff) && (
+            <div className="flex flex-col gap-2 p-3 border-b border-gray-100 bg-purple-50/20">
+              {day.cleanings.map(
+                (c, i) =>
+                  c.dayOff && (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-r-lg border-l-2 text-xs font-normal border-purple-400 text-purple-800"
+                    >
+                      <Moon className="w-3.5 h-3.5 text-purple-600" />
+                      <span>{c.cleaner.name} · tentative day off</span>
+                    </div>
+                  )
+              )}
+            </div>
+          )}
+
+          {/* Cleaner assignment breakdown */}
           {cleaners.map((cleaner) => {
             const assignedCleanings = day.cleanings.filter(
-                (c) => c.cleaner.id === cleaner.id && !c.dayOff
+              (c) => c.cleaner.id === cleaner.id && !c.dayOff
             );
             return (
-                <div
+              <div
                 key={cleaner.id}
-                className="flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0"
-                >
+                className="flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0 bg-white"
+              >
                 <span className="text-sm font-semibold text-gray-900 w-24 shrink-0 pt-0.5">
-                    {cleaner.name}
+                  {cleaner.name}
                 </span>
                 <div className="flex flex-wrap gap-1.5 items-center flex-1 min-w-0">
-                    {assignedCleanings.length === 0 ? (
-                    <span className="text-xs text-gray-300 italic">No assignments</span>
-                    ) : (
+                  {assignedCleanings.length === 0 ? (
+                    <span className="text-xs text-gray-300 italic">
+                      No assignments
+                    </span>
+                  ) : (
                     assignedCleanings.map((assignment, idx) => {
-                        const isSameDayTurnover = Boolean(assignment.checkOut && assignment.checkIn);
+                      const isSameDay = Boolean(
+                        assignment.checkOut && assignment.checkIn
+                      );
 
-                        return (
+                      return (
                         <span
-                            key={idx}
-                            className={`text-xs px-2.5 py-1 rounded font-medium flex items-center gap-1.5 ${
-                            isSameDayTurnover
-                                ? "bg-amber-100 text-amber-800 border border-amber-200"
-                                : "bg-gray-100 text-gray-700"
-                            }`}
-                            title={`${assignment.property?.name || 'Property'}${assignment.checkOut ? ` · Out: \${assignment.checkOut.time}` : ''}${assignment.checkIn ? ` · In: \${assignment.checkIn.time}` : ''}`}
+                          key={idx}
+                          className={`text-xs px-2.5 py-1 rounded font-medium flex items-center gap-1.5 transition-colors ${
+                            isSameDay
+                              ? "bg-amber-100 text-amber-800 border border-amber-200"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                          title={`${assignment.property?.name}${
+                            assignment.checkOut
+                              ? ` · Out: \${assignment.checkOut.time}`
+                              : ""
+                          }${
+                            assignment.checkIn
+                              ? ` · In: \${assignment.checkIn.time}`
+                              : ""
+                          }`}
                         >
-                            {isSameDayTurnover && <span className="w-1.5 h-1.5 rounded-sm bg-amber-400"></span>}
-                            {assignment.property?.name || `Property #${idx + 1}`}
+                          {isSameDay ? (
+                            <RefreshCw className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                          ) : (
+                            <Home className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                          )}
+                          <span>
+                            {assignment.property?.name ||
+                              `Property #${idx + 1}`}
+                          </span>
                         </span>
-                        );
+                      );
                     })
-                    )}
+                  )}
                 </div>
-                </div>
+              </div>
             );
           })}
 
-          <div className="px-4 py-2 border-t border-gray-100 flex gap-4 flex-wrap">
-            <span className="text-xs text-gray-400 flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm bg-amber-200"></span> same-day turnover
+          <div className="px-4 py-2.5 border-t border-gray-100 flex gap-4 flex-wrap bg-gray-50 text-xs text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <RefreshCw className="w-3 h-3 text-amber-500" />
+              same-day turnover (check-out & check-in)
             </span>
           </div>
         </div>
