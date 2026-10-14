@@ -1,7 +1,7 @@
 // components/DayRow.tsx
 "use client";
 
-import { DaySchedule, Cleaner } from "@/types/planner";
+import { DaySchedule, Cleaner, CleaningAssignment } from "@/types/planner";
 import {
   ChevronDown,
   Sparkles,
@@ -9,6 +9,7 @@ import {
   AlertCircle,
   Moon,
   Home,
+  Gem,
 } from "lucide-react";
 
 interface DayRowProps {
@@ -17,6 +18,13 @@ interface DayRowProps {
   isHighlighted: boolean;
   isExpanded: boolean;
   onToggle: () => void;
+}
+
+// Helper function to identify high-value assignments (\$2000+)
+function isHighValue(c: CleaningAssignment): boolean {
+  const checkOutPrice = c.checkOut?.totalPrice ?? 0;
+  const checkInPrice = c.checkIn?.totalPrice ?? 0;
+  return checkOutPrice >= 2000 || checkInPrice >= 2000;
 }
 
 export default function DayRow({
@@ -28,9 +36,12 @@ export default function DayRow({
 }: DayRowProps) {
   const activeCleanings = day.cleanings.filter((c) => !c.dayOff);
   const totalCleanings = activeCleanings.length;
+  
   const sameDayTurnoversCount = activeCleanings.filter(
     (c) => c.checkOut && c.checkIn
   ).length;
+
+  const highValueCount = activeCleanings.filter(isHighValue).length;
 
   return (
     <div
@@ -75,7 +86,7 @@ export default function DayRow({
 
         {/* Day Summary Content */}
         <div className="flex-1 min-w-0 px-5 py-4 flex items-center gap-3">
-          {/* Cleaning Stats & Same-Day Count (Icon + Number only) */}
+          {/* Cleaning Stats, Same-Day & High-Value Badges */}
           <div className="flex items-center gap-2 shrink-0 text-sm font-medium tabular-nums">
             <span className="text-gray-800 font-semibold flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-600" />
@@ -89,6 +100,16 @@ export default function DayRow({
               >
                 <RefreshCw className="w-3 h-3 text-amber-600" />
                 {sameDayTurnoversCount}
+              </span>
+            )}
+
+            {highValueCount > 0 && (
+              <span
+                className="text-emerald-800 bg-emerald-100/80 border border-emerald-200/80 px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1"
+                title={`${highValueCount} high-value reservation(s) ($2,000+)`}
+              >
+                <Gem className="w-3 h-3 text-emerald-600" />
+                {highValueCount}
               </span>
             )}
           </div>
@@ -178,12 +199,15 @@ export default function DayRow({
                       const isSameDay = Boolean(
                         assignment.checkOut && assignment.checkIn
                       );
+                      const isHighVal = isHighValue(assignment);
 
                       return (
                         <span
                           key={idx}
                           className={`text-xs px-2.5 py-1 rounded font-medium flex items-center gap-1.5 transition-colors ${
-                            isSameDay
+                            isHighVal
+                              ? "bg-emerald-50 text-emerald-900 border border-emerald-300 shadow-2xs"
+                              : isSameDay
                               ? "bg-amber-100 text-amber-800 border border-amber-200"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
@@ -197,7 +221,9 @@ export default function DayRow({
                               : ""
                           }`}
                         >
-                          {isSameDay ? (
+                          {isHighVal ? (
+                            <Gem className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          ) : isSameDay ? (
                             <RefreshCw className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                           ) : (
                             <Home className="w-3.5 h-3.5 text-gray-500 shrink-0" />
@@ -215,10 +241,15 @@ export default function DayRow({
             );
           })}
 
+          {/* Drawer Legend */}
           <div className="px-4 py-2.5 border-t border-gray-100 flex gap-4 flex-wrap bg-gray-50 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
               <RefreshCw className="w-3 h-3 text-amber-500" />
-              same-day turnover (check-out & check-in)
+              same-day turnover
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Gem className="w-3 h-3 text-emerald-600" />
+              high-value (\$2,000+)
             </span>
           </div>
         </div>

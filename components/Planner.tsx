@@ -2,9 +2,9 @@
 "use client";
 
 import { useState } from "react";
-import { DaySchedule, Cleaner } from "@/types/planner";
+import { DaySchedule, Cleaner, CleaningAssignment } from "@/types/planner";
 import DayRow from "@/components/DayRow";
-import { ChevronLeft, ChevronRight, Sparkles, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem } from "lucide-react";
 
 interface PlannerClientProps {
   schedule: DaySchedule[];
@@ -12,6 +12,13 @@ interface PlannerClientProps {
   weekLabel: string;
   prevHref: string;
   nextHref: string;
+}
+
+// Helper function to evaluate high-value assignments ($2,000+)
+function isHighValue(c: CleaningAssignment): boolean {
+  const checkOutPrice = c.checkOut?.totalPrice ?? 0;
+  const checkInPrice = c.checkIn?.totalPrice ?? 0;
+  return checkOutPrice >= 2000 || checkInPrice >= 2000;
 }
 
 export default function Planner({
@@ -27,7 +34,7 @@ export default function Planner({
     setExpandedDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
-  // Compute total weekly cleanings and same-day turnovers
+  // Compute total weekly cleanings, same-day turnovers, and high-value reservations
   const totalWeekCleanings = schedule.reduce(
     (acc, day) => acc + day.cleanings.filter((c) => !c.dayOff).length,
     0
@@ -36,6 +43,12 @@ export default function Planner({
   const totalWeekSameDayTurnovers = schedule.reduce(
     (acc, day) =>
       acc + day.cleanings.filter((c) => !c.dayOff && c.checkOut && c.checkIn).length,
+    0
+  );
+
+  const totalWeekHighValue = schedule.reduce(
+    (acc, day) =>
+      acc + day.cleanings.filter((c) => !c.dayOff && isHighValue(c)).length,
     0
   );
 
@@ -89,6 +102,15 @@ export default function Planner({
               <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
               <strong>{totalWeekSameDayTurnovers}</strong> same-day turnovers
             </span>
+            {totalWeekHighValue > 0 && (
+              <>
+                <span className="text-gray-300">·</span>
+                <span className="text-emerald-800 flex items-center gap-1.5 font-medium">
+                  <Gem className="w-3.5 h-3.5 text-emerald-600" />
+                  <strong>{totalWeekHighValue}</strong> high-value
+                </span>
+              </>
+            )}
           </div>
         </div>
 
