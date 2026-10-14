@@ -1,4 +1,4 @@
-export interface CompanySettings {
+export interface GlobalSettings {
   heavyLoadThreshold: number;
   overflowThreshold: number;
   highValueCutoff: number;
@@ -7,7 +7,7 @@ export interface CompanySettings {
   updatedAt?: string;
 }
 
-export const defaultSettings: CompanySettings = {
+export const defaultSettings: GlobalSettings = {
   heavyLoadThreshold: 3,
   overflowThreshold: 4,
   highValueCutoff: 500,

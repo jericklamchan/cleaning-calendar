@@ -1,10 +1,10 @@
 'use server';
 
 import { getSettings, saveSettings } from '@/utils/settingsCache';
-import { CompanySettings } from '@/types/settings';
+import { GlobalSettings } from '@/types/settings';
 import { revalidatePath } from 'next/cache';
 
-export async function loadSettingsAction(): Promise<CompanySettings> {
+export async function loadSettingsAction(): Promise<GlobalSettings> {
   return await getSettings();
 }
 
