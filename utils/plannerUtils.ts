@@ -1,4 +1,3 @@
-// utils/plannerUtils.ts
 import { CleaningAssignment, DaySchedule } from "@/types/planner";
 
 export interface CleanerWeeklyCapacity {
@@ -30,9 +29,6 @@ export function isCleanerOverloaded(
   return cleanerCleanings.length >= 4;
 }
 
-/**
- * Determines overall weekly capacity status based strictly on total volume
- */
 export function getCleanerCapacityStatus(
   totalCleanings: number
 ): "Overloaded" | "High Load" | "Optimal" {
@@ -41,9 +37,6 @@ export function getCleanerCapacityStatus(
   return "Optimal";
 }
 
-/**
- * Calculates total weekly capacity metrics and load status for a specific cleaner
- */
 export function getCleanerWeeklyCapacity(
   cleanerId: string,
   schedule: DaySchedule[]

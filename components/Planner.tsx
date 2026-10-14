@@ -1,4 +1,3 @@
-// components/Planner.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,6 +5,7 @@ import { DaySchedule, Cleaner } from "@/types/planner";
 import DayRow from "@/components/DayRow";
 import CapacityView from "@/components/CapacityView";
 import LegendModal from "@/components/LegendModal";
+import SchedulesView from "@/components/SchedulesView";
 import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem, HelpCircle } from "lucide-react";
 import { isHighValueAssignment, isSameDayTurnover } from "@/utils/plannerUtils";
 
@@ -164,9 +164,7 @@ export default function Planner({
         )}
 
         {activeTab === "schedules" && (
-          <div className="bg-white rounded-xl border border-[#e8e4dc] p-8 text-center text-gray-400 text-sm">
-            Property Schedules View coming next.
-          </div>
+          <SchedulesView schedule={schedule} cleaners={cleaners} weekLabel={weekLabel} />
         )}
 
       </div>

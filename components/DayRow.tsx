@@ -1,4 +1,3 @@
-// components/DayRow.tsx
 "use client";
 
 import { DaySchedule, Cleaner } from "@/types/planner";

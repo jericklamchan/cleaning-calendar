@@ -1,4 +1,3 @@
-// data/mockPlanner.ts
 import { Cleaner, Property, DaySchedule } from "@/types/planner";
 
 export const mockCleaners: Cleaner[] = [

@@ -1,4 +1,3 @@
-// components/LegendModal.tsx
 "use client";
 
 import { useEffect } from "react";

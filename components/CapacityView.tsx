@@ -1,4 +1,3 @@
-// components/CapacityView.tsx
 "use client";
 
 import { DaySchedule, Cleaner } from "@/types/planner";
