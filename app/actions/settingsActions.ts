@@ -1,6 +1,6 @@
 'use server';
 
-import { getSettings, saveSettings } from '@/lib/settingsCache';
+import { getSettings, saveSettings } from '@/lib/cache';
 import { GlobalSettings } from '@/types/settings';
 import { revalidatePath } from 'next/cache';
 

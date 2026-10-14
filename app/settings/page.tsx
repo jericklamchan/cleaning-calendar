@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getSettings } from '@/lib/settingsCache';
+import { getSettings } from '@/lib/cache';
 import SettingsForm from '@/components/settings/SettingsForm';
 
 async function SettingsContent() {

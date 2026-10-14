@@ -11,7 +11,7 @@ import {
   Gem,
   ChevronDown,
 } from "lucide-react";
-import { isHighValueAssignment, isSameDayTurnover } from "@/lib/plannerUtils";
+import { isHighValueAssignment, isSameDayTurnover } from "@/lib/utils";
 
 interface SchedulesViewProps {
   schedule: DaySchedule[];

@@ -1,7 +1,7 @@
 import { getProperties } from '@/stores/propertyStore';
 import { getCleaners } from '@/stores/cleanerStore';
 import { getUsers } from '@/stores/userStore';
-import { getSettings } from '@/lib/settingsCache';
+import { getSettings } from '@/lib/cache';
 
 export default async function DashboardContent() {
   const [properties, cleaners, users, settings] = await Promise.all([
