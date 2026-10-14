@@ -248,20 +248,6 @@ export default function DayRow({
             );
           })}
 
-          <div className="px-4 py-2.5 border-t border-gray-100 flex gap-4 flex-wrap bg-gray-50 text-xs text-gray-500">
-            <span className="flex items-center gap-1.5">
-              <RefreshCw className="w-3 h-3 text-amber-500" />
-              same-day turnover
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Gem className="w-3 h-3 text-emerald-600" />
-              high-value (\$2,000+)
-            </span>
-            <span className="flex items-center gap-1.5">
-              <AlertTriangle className="w-3 h-3 text-rose-500" />
-              overloaded (4+ cleanings)
-            </span>
-          </div>
         </div>
       )}
     </div>

@@ -4,7 +4,8 @@
 import { useState } from "react";
 import { DaySchedule, Cleaner } from "@/types/planner";
 import DayRow from "@/components/DayRow";
-import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem } from "lucide-react";
+import LegendModal from "@/components/LegendModal";
+import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem, HelpCircle } from "lucide-react";
 import { isHighValueAssignment, isSameDayTurnover } from "@/utils/plannerUtils";
 
 interface PlannerClientProps {
@@ -23,12 +24,12 @@ export default function Planner({
   nextHref,
 }: PlannerClientProps) {
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   const toggleDay = (date: string) => {
     setExpandedDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
-  // Compute total weekly stats using centralized helpers
   const totalWeekCleanings = schedule.reduce(
     (acc, day) => acc + day.cleanings.filter((c) => !c.dayOff).length,
     0
@@ -85,26 +86,37 @@ export default function Planner({
             </button>
           </div>
 
-          {/* Quick Counter Badge */}
-          <div className="flex items-center gap-3 bg-white border border-[#e8e4dc] rounded-xl px-5 py-2.5 w-fit mt-3 text-sm text-gray-700">
-            <span className="flex items-center gap-1.5 font-medium">
-              <Sparkles className="w-4 h-4 text-emerald-600" />
-              <strong>{totalWeekCleanings}</strong> cleanings
-            </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-amber-800 flex items-center gap-1.5 font-medium">
-              <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
-              <strong>{totalWeekSameDayTurnovers}</strong> same-day turnovers
-            </span>
-            {totalWeekHighValue > 0 && (
-              <>
-                <span className="text-gray-300">·</span>
-                <span className="text-emerald-800 flex items-center gap-1.5 font-medium">
-                  <Gem className="w-3.5 h-3.5 text-emerald-600" />
-                  <strong>{totalWeekHighValue}</strong> high-value
-                </span>
-              </>
-            )}
+          {/* Quick Counter Badge with Legend Trigger */}
+          <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
+            <div className="flex items-center gap-3 bg-white border border-[#e8e4dc] rounded-xl px-5 py-2.5 text-sm text-gray-700">
+              <span className="flex items-center gap-1.5 font-medium">
+                <Sparkles className="w-4 h-4 text-emerald-600" />
+                <strong>{totalWeekCleanings}</strong>
+              </span>
+              <span className="text-gray-300">·</span>
+              <span className="text-amber-800 flex items-center gap-1.5 font-medium">
+                <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
+                <strong>{totalWeekSameDayTurnovers}</strong>
+              </span>
+              {totalWeekHighValue > 0 && (
+                <>
+                  <span className="text-gray-300">·</span>
+                  <span className="text-emerald-800 flex items-center gap-1.5 font-medium">
+                    <Gem className="w-3.5 h-3.5 text-emerald-600" />
+                    <strong>{totalWeekHighValue}</strong>
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* Legend Trigger Button */}
+            <button
+              onClick={() => setIsLegendOpen(true)}
+              className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-800 bg-white hover:bg-gray-50 border border-[#e8e4dc] px-3 py-2 rounded-xl transition-colors cursor-pointer"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-gray-400" />
+              <span>Legend</span>
+            </button>
           </div>
         </div>
 
@@ -123,6 +135,9 @@ export default function Planner({
         </div>
 
       </div>
+
+      {/* Central Legend Modal */}
+      <LegendModal isOpen={isLegendOpen} onClose={() => setIsLegendOpen(false)} />
     </div>
   );
 }
