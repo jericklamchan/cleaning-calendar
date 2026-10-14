@@ -1,7 +1,0 @@
-{
-  "heavyLoadThreshold": 3,
-  "overflowThreshold": 4,
-  "highValueCutoff": 500,
-  "deepCleanNights": 7,
-  "rescheduleWindowDays": 7
-}
