@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { DaySchedule, Cleaner } from "@/types/planner";
 import DayRow from "@/components/DayRow";
+import CapacityView from "@/components/CapacityView";
 import LegendModal from "@/components/LegendModal";
 import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem, HelpCircle } from "lucide-react";
 import { isHighValueAssignment, isSameDayTurnover } from "@/utils/plannerUtils";
@@ -23,6 +24,7 @@ export default function Planner({
   prevHref,
   nextHref,
 }: PlannerClientProps) {
+  const [activeTab, setActiveTab] = useState<"week" | "capacity" | "schedules">("week");
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
   const [isLegendOpen, setIsLegendOpen] = useState(false);
 
@@ -75,13 +77,34 @@ export default function Planner({
 
           {/* Sub-tabs */}
           <div className="flex items-center gap-0 border-b border-gray-200 mt-3">
-            <button className="px-4 py-2.5 text-sm cursor-pointer relative text-gray-900 font-medium after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900">
+            <button
+              onClick={() => setActiveTab("week")}
+              className={`px-4 py-2.5 text-sm cursor-pointer relative font-medium transition-colors ${
+                activeTab === "week"
+                  ? "text-gray-900 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
               Week
             </button>
-            <button className="px-4 py-2.5 text-sm cursor-pointer relative text-gray-400 hover:text-gray-600">
+            <button
+              onClick={() => setActiveTab("capacity")}
+              className={`px-4 py-2.5 text-sm cursor-pointer relative font-medium transition-colors ${
+                activeTab === "capacity"
+                  ? "text-gray-900 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
               Capacity
             </button>
-            <button className="px-4 py-2.5 text-sm cursor-pointer relative text-gray-400 hover:text-gray-600">
+            <button
+              onClick={() => setActiveTab("schedules")}
+              className={`px-4 py-2.5 text-sm cursor-pointer relative font-medium transition-colors ${
+                activeTab === "schedules"
+                  ? "text-gray-900 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
               Schedules
             </button>
           </div>
@@ -120,24 +143,40 @@ export default function Planner({
           </div>
         </div>
 
-        {/* Day Rows List */}
-        <div className="flex flex-col gap-2.5">
-          {schedule.map((day, idx) => (
-            <DayRow
-              key={day.date}
-              day={day}
-              cleaners={cleaners}
-              isHighlighted={idx === 2}
-              isExpanded={!!expandedDays[day.date]}
-              onToggle={() => toggleDay(day.date)}
-            />
-          ))}
-        </div>
+        {/* Tab Views */}
+        {activeTab === "week" && (
+          <div className="flex flex-col gap-2.5">
+            {schedule.map((day, idx) => (
+              <DayRow
+                key={day.date}
+                day={day}
+                cleaners={cleaners}
+                isHighlighted={idx === 2}
+                isExpanded={!!expandedDays[day.date]}
+                onToggle={() => toggleDay(day.date)}
+              />
+            ))}
+          </div>
+        )}
+
+        {activeTab === "capacity" && (
+          <CapacityView schedule={schedule} cleaners={cleaners} />
+        )}
+
+        {activeTab === "schedules" && (
+          <div className="bg-white rounded-xl border border-[#e8e4dc] p-8 text-center text-gray-400 text-sm">
+            Property Schedules View coming next.
+          </div>
+        )}
 
       </div>
 
       {/* Central Legend Modal */}
-      <LegendModal isOpen={isLegendOpen} onClose={() => setIsLegendOpen(false)} />
+      <LegendModal
+        isOpen={isLegendOpen}
+        onClose={() => setIsLegendOpen(false)}
+        activeTab={activeTab}
+      />
     </div>
   );
 }
