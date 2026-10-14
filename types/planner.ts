@@ -11,6 +11,7 @@ export interface ReservationDetails {
 }
 
 export interface CleaningAssignment {
+  id?: string; // Added to uniquely identify each task instance for drag-and-drop
   cleaner: Cleaner;
   property: Property;
   dayOff?: boolean;

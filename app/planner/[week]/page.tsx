@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import WeekView from "@/components/WeekView";
 import { getCleaners } from "@/utils/cleanerStore";
 import { getProperties } from "@/utils/propertyStore";
-import { getMockScheduleForWeek } from "@/data/mockData";
+import { getMockScheduleForWeek } from "@/data/mockService";
 
 interface PageProps {
   params: Promise<{

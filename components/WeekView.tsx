@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DaySchedule, Cleaner } from "@/types/planner";
 import DayRow from "@/components/DayRow";
 import CapacityView from "@/components/CapacityView";
@@ -18,32 +18,77 @@ interface PlannerClientProps {
 }
 
 export default function Planner({
-  schedule,
+  schedule: initialSchedule,
   cleaners,
   weekLabel,
   prevHref,
   nextHref,
 }: PlannerClientProps) {
+  const [scheduleData, setScheduleData] = useState<DaySchedule[]>(initialSchedule);
   const [activeTab, setActiveTab] = useState<"week" | "capacity" | "schedules">("week");
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+
+  // Keep state in sync if props change (e.g., changing weeks via navigation)
+  useEffect(() => {
+    setScheduleData(initialSchedule);
+  }, [initialSchedule]);
 
   const toggleDay = (date: string) => {
     setExpandedDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
-  const totalWeekCleanings = schedule.reduce(
+  // Reassignment Handler: Target specific task by unique taskId (fallback to property.id if missing)
+  const handleReassignCleaner = (
+    date: string,
+    taskId: string,
+    sourceCleanerId: string,
+    targetCleanerId: string
+  ) => {
+    if (sourceCleanerId === targetCleanerId) return;
+
+    const targetCleaner = cleaners.find((c) => c.id === targetCleanerId);
+    if (!targetCleaner) return;
+
+    setScheduleData((prevSchedule) =>
+      prevSchedule.map((day) => {
+        if (day.date !== date) return day;
+
+        // Map through cleanings and reassign only the exact task instance matching taskId
+        const updatedCleanings = day.cleanings.map((task) => {
+          const currentTaskId = task.id || task.property?.id;
+          if (
+            currentTaskId === taskId &&
+            task.cleaner?.id === sourceCleanerId
+          ) {
+            return {
+              ...task,
+              cleaner: targetCleaner,
+            };
+          }
+          return task;
+        });
+
+        return {
+          ...day,
+          cleanings: updatedCleanings,
+        };
+      })
+    );
+  };
+
+  const totalWeekCleanings = scheduleData.reduce(
     (acc, day) => acc + day.cleanings.filter((c) => !c.dayOff).length,
     0
   );
 
-  const totalWeekSameDayTurnovers = schedule.reduce(
+  const totalWeekSameDayTurnovers = scheduleData.reduce(
     (acc, day) =>
       acc + day.cleanings.filter((c) => !c.dayOff && isSameDayTurnover(c)).length,
     0
   );
 
-  const totalWeekHighValue = schedule.reduce(
+  const totalWeekHighValue = scheduleData.reduce(
     (acc, day) =>
       acc + day.cleanings.filter((c) => !c.dayOff && isHighValueAssignment(c)).length,
     0
@@ -132,7 +177,6 @@ export default function Planner({
               )}
             </div>
 
-            {/* Legend Trigger Button */}
             <button
               onClick={() => setIsLegendOpen(true)}
               className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-800 bg-white hover:bg-gray-50 border border-[#e8e4dc] px-3 py-2 rounded-xl transition-colors cursor-pointer"
@@ -146,7 +190,7 @@ export default function Planner({
         {/* Tab Views */}
         {activeTab === "week" && (
           <div className="flex flex-col gap-2.5">
-            {schedule.map((day, idx) => (
+            {scheduleData.map((day, idx) => (
               <DayRow
                 key={day.date}
                 day={day}
@@ -154,22 +198,22 @@ export default function Planner({
                 isHighlighted={idx === 2}
                 isExpanded={!!expandedDays[day.date]}
                 onToggle={() => toggleDay(day.date)}
+                onReassignCleaner={handleReassignCleaner}
               />
             ))}
           </div>
         )}
 
         {activeTab === "capacity" && (
-          <CapacityView schedule={schedule} cleaners={cleaners} />
+          <CapacityView schedule={scheduleData} cleaners={cleaners} />
         )}
 
         {activeTab === "schedules" && (
-          <SchedulesView schedule={schedule} cleaners={cleaners} weekLabel={weekLabel} />
+          <SchedulesView schedule={scheduleData} cleaners={cleaners} weekLabel={weekLabel} />
         )}
 
       </div>
 
-      {/* Central Legend Modal */}
       <LegendModal
         isOpen={isLegendOpen}
         onClose={() => setIsLegendOpen(false)}

@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import { DaySchedule, Cleaner } from "@/types/planner";
 import {
   ChevronDown,
@@ -22,6 +23,12 @@ interface DayRowProps {
   isHighlighted: boolean;
   isExpanded: boolean;
   onToggle: () => void;
+  onReassignCleaner?: (
+    date: string,
+    taskId: string, // Updated parameter name to reflect taskId
+    sourceCleanerId: string,
+    targetCleanerId: string
+  ) => void;
 }
 
 export default function DayRow({
@@ -30,12 +37,74 @@ export default function DayRow({
   isHighlighted,
   isExpanded,
   onToggle,
+  onReassignCleaner,
 }: DayRowProps) {
+  const [dragOverCleanerId, setDragOverCleanerId] = useState<string | null>(null);
+
   const activeCleanings = day.cleanings.filter((c) => !c.dayOff);
   const totalCleanings = activeCleanings.length;
-  
+
   const sameDayTurnoversCount = activeCleanings.filter(isSameDayTurnover).length;
   const highValueCount = activeCleanings.filter(isHighValueAssignment).length;
+
+  const handleDragStart = (
+    e: React.DragEvent,
+    taskId: string,
+    cleanerId: string
+  ) => {
+    e.stopPropagation();
+    const payload = {
+      date: day.date,
+      taskId, // Pass unique task id
+      sourceCleanerId: cleanerId,
+    };
+    e.dataTransfer.setData("application/json", JSON.stringify(payload));
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, cleanerId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverCleanerId !== cleanerId) {
+      setDragOverCleanerId(cleanerId);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent, cleanerId: string) => {
+    e.preventDefault();
+    if (dragOverCleanerId === cleanerId) {
+      setDragOverCleanerId(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetCleanerId: string) => {
+    e.preventDefault();
+    setDragOverCleanerId(null);
+
+    try {
+      const raw = e.dataTransfer.getData("application/json");
+      if (!raw) return;
+
+      const payload = JSON.parse(raw);
+      // Check for taskId instead of propertyId
+      if (
+        payload &&
+        payload.taskId &&
+        payload.date === day.date &&
+        payload.sourceCleanerId &&
+        payload.sourceCleanerId !== targetCleanerId
+      ) {
+        onReassignCleaner?.(
+          day.date,
+          payload.taskId, // Pass taskId to handler
+          payload.sourceCleanerId,
+          targetCleanerId
+        );
+      }
+    } catch (err) {
+      console.error("Failed to reassign cleaner on drop:", err);
+    }
+  };
 
   return (
     <div
@@ -136,7 +205,11 @@ export default function DayRow({
                       <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
                     </span>
                   )}
-                  <span className={isOverloaded && !hasOff ? "text-rose-700 font-medium" : ""}>
+                  <span
+                    className={
+                      isOverloaded && !hasOff ? "text-rose-700 font-medium" : ""
+                    }
+                  >
                     {cleaner.name} {cleanerCleanings}
                   </span>
                 </span>
@@ -160,10 +233,10 @@ export default function DayRow({
           {day.cleanings.some((c) => c.dayOff) && (
             <div className="flex flex-col gap-2 p-3 border-b border-gray-100 bg-purple-50/20">
               {day.cleanings.map(
-                (c, i) =>
+                (c) =>
                   c.dayOff && (
                     <div
-                      key={i}
+                      key={c.id || `${c.cleaner.id}-dayoff`} // 👈 Fixed: Using c.id instead of index
                       className="flex items-center gap-2 px-3 py-1.5 rounded-r-lg border-l-2 text-xs font-normal border-purple-400 text-purple-800"
                     >
                       <Moon className="w-3.5 h-3.5 text-purple-600" />
@@ -179,15 +252,23 @@ export default function DayRow({
               (c) => c.cleaner.id === cleaner.id && !c.dayOff
             );
             const isOverloaded = isCleanerOverloaded(cleaner.id, day.cleanings);
+            const isTargeted = dragOverCleanerId === cleaner.id;
 
             return (
               <div
                 key={cleaner.id}
-                className={`flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0 ${
-                  isOverloaded ? "bg-rose-50/30" : "bg-white"
+                onDragOver={(e) => handleDragOver(e, cleaner.id)}
+                onDragLeave={(e) => handleDragLeave(e, cleaner.id)}
+                onDrop={(e) => handleDrop(e, cleaner.id)}
+                className={`flex gap-3 px-4 py-3 border-t border-gray-100 first:border-t-0 transition-colors ${
+                  isTargeted
+                    ? "bg-blue-50/80 border-blue-300 ring-1 ring-blue-300 ring-inset"
+                    : isOverloaded
+                    ? "bg-rose-50/30"
+                    : "bg-white"
                 }`}
               >
-                <div className="flex items-center gap-1.5 w-24 shrink-0 pt-0.5">
+                <div className="flex items-center gap-1.5 w-24 shrink-0 pt-0.5 select-none">
                   <span className="text-sm font-semibold text-gray-900">
                     {cleaner.name}
                   </span>
@@ -197,46 +278,55 @@ export default function DayRow({
                     </span>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-1.5 items-center flex-1 min-w-0">
+                <div className="flex flex-wrap gap-1.5 items-center flex-1 min-w-0 min-h-[32px]">
                   {assignedCleanings.length === 0 ? (
-                    <span className="text-xs text-gray-300 italic">
-                      No assignments
+                    <span className="text-xs text-gray-300 italic select-none">
+                      {isTargeted ? "Drop task here to assign" : "No assignments"}
                     </span>
                   ) : (
-                    assignedCleanings.map((assignment, idx) => {
+                    assignedCleanings.map((assignment) => {
                       const isSameDay = isSameDayTurnover(assignment);
                       const isHighVal = isHighValueAssignment(assignment);
 
                       return (
                         <span
-                          key={idx}
-                          className={`text-xs px-2.5 py-1 rounded font-medium flex items-center gap-1.5 transition-colors ${
+                          key={assignment.id} // 👈 Fixed: Using unique task id as key to prevent duplication/crashes
+                          draggable
+                          onDragStart={(e) =>
+                            handleDragStart(
+                              e,
+                              assignment.id!, // 👈 Pass unique task id to drag payload
+                              cleaner.id
+                            )
+                          }
+                          className={`text-xs px-2.5 py-1 rounded font-medium flex items-center gap-1.5 transition-all cursor-grab active:cursor-grabbing hover:shadow-xs select-none ${
                             isHighVal
                               ? "bg-emerald-50 text-emerald-900 border border-emerald-300 shadow-2xs"
                               : isSameDay
                               ? "bg-amber-100 text-amber-800 border border-amber-200"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
                           }`}
-                          title={`${assignment.property?.name}${
+                          title={`Drag to reassign · ${
+                            assignment.property?.name
+                          }${
                             assignment.checkOut
-                              ? ` · Out: \${assignment.checkOut.time}`
+                              ? ` · Out: ${assignment.checkOut.time}`
                               : ""
                           }${
                             assignment.checkIn
-                              ? ` · In: \${assignment.checkIn.time}`
+                              ? ` · In: ${assignment.checkIn.time}`
                               : ""
                           }`}
                         >
                           {isHighVal ? (
-                            <Gem className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <Gem className="w-3.5 h-3.5 text-emerald-600 shrink-0 pointer-events-none" />
                           ) : isSameDay ? (
-                            <RefreshCw className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                            <RefreshCw className="w-3.5 h-3.5 text-amber-600 shrink-0 pointer-events-none" />
                           ) : (
-                            <Home className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                            <Home className="w-3.5 h-3.5 text-gray-500 shrink-0 pointer-events-none" />
                           )}
-                          <span>
-                            {assignment.property?.name ||
-                              `Property #${idx + 1}`}
+                          <span className="pointer-events-none">
+                            {assignment.property?.name || "Property"}
                           </span>
                         </span>
                       );
@@ -246,7 +336,6 @@ export default function DayRow({
               </div>
             );
           })}
-
         </div>
       )}
     </div>
