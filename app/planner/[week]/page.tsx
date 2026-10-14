@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import WeekView from "@/components/WeekView";
-import { mockCleaners, getMockScheduleForWeek } from "@/data/mockData";
+import { getCleaners } from "@/utils/cleanerStore";
+import { getProperties } from "@/utils/propertyStore";
+import { getMockScheduleForWeek } from "@/data/mockData";
 
 interface PageProps {
   params: Promise<{
@@ -8,13 +10,18 @@ interface PageProps {
   }>;
 }
 
-// Inner component that safely consumes the async params Promise
 async function PlannerLoader({ params }: PageProps) {
   const { week } = await params;
-  
-  const schedule = getMockScheduleForWeek(week);
 
-  // Format week range label (e.g., "Oct 11 – Oct 17")
+  // Concurrent fetch from JSON cache stores
+  const [cleaners, properties] = await Promise.all([
+    getCleaners(),
+    getProperties(),
+  ]);
+
+  // Generate week schedule dynamically based on saved stores
+  const schedule = getMockScheduleForWeek(week, cleaners, properties);
+
   const startDate = new Date(week);
   const endDate = new Date(startDate);
   endDate.setDate(startDate.getDate() + 6);
@@ -22,7 +29,6 @@ async function PlannerLoader({ params }: PageProps) {
   const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
   const weekLabel = `${startDate.toLocaleDateString("en-US", options)} – ${endDate.toLocaleDateString("en-US", options)}`;
 
-  // Compute prev/next week string links easily
   const prevDate = new Date(startDate);
   prevDate.setDate(startDate.getDate() - 7);
   const nextDate = new Date(startDate);
@@ -34,7 +40,7 @@ async function PlannerLoader({ params }: PageProps) {
   return (
     <WeekView 
       schedule={schedule} 
-      cleaners={mockCleaners} 
+      cleaners={cleaners} 
       weekLabel={weekLabel}
       prevHref={prevHref}
       nextHref={nextHref}
@@ -42,7 +48,6 @@ async function PlannerLoader({ params }: PageProps) {
   );
 }
 
-// Page wrapper with explicit Suspense boundary to satisfy instant navigation rules
 export default function PlannerPage(props: PageProps) {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#f8f7f4] flex items-center justify-center text-gray-400">Loading schedule...</div>}>

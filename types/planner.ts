@@ -1,13 +1,8 @@
-export interface Cleaner {
-  id: string;
-  name: string;
-}
+import { Cleaner } from "@/types/cleaner";
+import { Property } from "@/types/property";
 
-export interface Property {
-  id: string;
-  name: string;
-  code?: string;
-}
+export type { Cleaner };
+export type { Property };
 
 export interface ReservationDetails {
   guestName: string;

@@ -1,7 +1,7 @@
 import { CheckCircle2, XCircle } from 'lucide-react';
 
 interface StatusBadgeProps {
-  active: boolean;
+  active?: boolean;
   activeText?: string;
   inactiveText?: string;
 }
