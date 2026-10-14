@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
@@ -30,7 +31,9 @@ export default function RootLayout({
     >
       <body className="bg-[#f8f7f4] text-gray-900 min-h-full flex flex-col">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 w-full max-w-5xl mx-auto px-4 md:px-6 py-8">
+          {children}
+        </main>
       </body>
     </html>
   );

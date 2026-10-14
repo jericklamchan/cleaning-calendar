@@ -25,12 +25,13 @@ export default function Navbar() {
           </div>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <button 
+          <Link 
+            href="/settings" 
             aria-label="Settings"
-            className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md hover:bg-gray-100"
+            className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md hover:bg-gray-100 inline-flex items-center"
           >
             <Settings className="w-4 h-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </nav>
