@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Planner from "@/components/planner/Planner";
+import PlannerClient from "@/components/planner/PlannerClient";
 import { getCleaners } from "@/stores/cleanerStore";
 import { getProperties } from "@/stores/propertyStore";
 import { getMockScheduleForWeek } from "@/lib/mockService";
@@ -37,7 +37,7 @@ async function PlannerLoader({ params }: PageProps) {
   const nextHref = `/planner/${nextDate.toISOString().split("T")[0]}`;
 
   return (
-    <Planner 
+    <PlannerClient 
       schedule={schedule} 
       cleaners={cleaners} 
       weekLabel={weekLabel}
