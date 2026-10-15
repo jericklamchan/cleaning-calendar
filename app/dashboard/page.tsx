@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import DashboardContent from "@/components/DashboardContent";
+import DashboardView from "@/components/DashboardView";
 
 export default function DashboardPage() {
   return (
     <Suspense>
-      <DashboardContent />
+      <DashboardView />
     </Suspense>
   );
 }
