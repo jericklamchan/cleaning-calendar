@@ -1,3 +1,4 @@
+// components/Planner.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,7 +7,14 @@ import DayRow from "@/components/planner/DayRow";
 import CapacityView from "@/components/planner/CapacityView";
 import LegendModal from "@/components/LegendModal";
 import SchedulesView from "@/components/planner/SchedulesView";
-import { ChevronLeft, ChevronRight, Sparkles, RefreshCw, Gem, HelpCircle } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  RefreshCw,
+  Gem,
+  HelpCircle,
+} from "lucide-react";
 import { isHighValueAssignment, isSameDayTurnover } from "@/lib/utils";
 
 interface PlannerClientProps {
@@ -29,7 +37,6 @@ export default function Planner({
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
   const [isLegendOpen, setIsLegendOpen] = useState(false);
 
-  // Keep state in sync if props change (e.g., changing weeks via navigation)
   useEffect(() => {
     setScheduleData(initialSchedule);
   }, [initialSchedule]);
@@ -38,7 +45,6 @@ export default function Planner({
     setExpandedDays((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
-  // Reassignment Handler: Target specific task by unique taskId (fallback to property.id if missing)
   const handleReassignCleaner = (
     date: string,
     taskId: string,
@@ -54,7 +60,6 @@ export default function Planner({
       prevSchedule.map((day) => {
         if (day.date !== date) return day;
 
-        // Map through cleanings and reassign only the exact task instance matching taskId
         const updatedCleanings = day.cleanings.map((task) => {
           const currentTaskId = task.id || task.property?.id;
           if (
@@ -96,94 +101,102 @@ export default function Planner({
 
   return (
     <div className="min-h-screen bg-[#f8f7f4]">
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
+      {/* Reduced top padding (py-4) to eliminate gap under navbar */}
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-4">
         
-        {/* Header Section */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <a
-                href={prevHref}
-                className="p-1.5 rounded-lg border border-[#e8e4dc] bg-white text-gray-500 hover:bg-gray-50 transition-colors"
-                aria-label="Previous week"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </a>
-              <h1 className="text-3xl font-bold text-gray-900 mx-4">{weekLabel}</h1>
-              <a
-                href={nextHref}
-                className="p-1.5 rounded-lg border border-[#e8e4dc] bg-white text-gray-500 hover:bg-gray-50 transition-colors"
-                aria-label="Next week"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
+        {/* Header Card - Exactly matching DayRow container width and padding */}
+        <div className="bg-white rounded-xl border border-[#e8e4dc] p-3.5 md:p-4 mb-2.5 shadow-2xs">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            
+            {/* Left Controls: Week Switcher + Tabs */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Week Date Navigator */}
+              <div className="flex items-center gap-1 bg-gray-50 border border-gray-200/80 rounded-lg p-1">
+                <a
+                  href={prevHref}
+                  className="p-1 rounded-md hover:bg-white hover:shadow-2xs text-gray-500 transition-all"
+                  aria-label="Previous week"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </a>
+                <h1 className="text-sm md:text-base font-bold text-gray-900 px-2 select-none tracking-tight">
+                  {weekLabel}
+                </h1>
+                <a
+                  href={nextHref}
+                  className="p-1 rounded-md hover:bg-white hover:shadow-2xs text-gray-500 transition-all"
+                  aria-label="Next week"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </a>
+              </div>
 
-          {/* Sub-tabs */}
-          <div className="flex items-center gap-0 border-b border-gray-200 mt-3">
-            <button
-              onClick={() => setActiveTab("week")}
-              className={`px-4 py-2.5 text-sm cursor-pointer relative font-medium transition-colors ${
-                activeTab === "week"
-                  ? "text-gray-900 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900"
-                  : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              Week
-            </button>
-            <button
-              onClick={() => setActiveTab("capacity")}
-              className={`px-4 py-2.5 text-sm cursor-pointer relative font-medium transition-colors ${
-                activeTab === "capacity"
-                  ? "text-gray-900 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900"
-                  : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              Capacity
-            </button>
-            <button
-              onClick={() => setActiveTab("schedules")}
-              className={`px-4 py-2.5 text-sm cursor-pointer relative font-medium transition-colors ${
-                activeTab === "schedules"
-                  ? "text-gray-900 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gray-900"
-                  : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              Schedules
-            </button>
-          </div>
-
-          {/* Quick Counter Badge with Legend Trigger */}
-          <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
-            <div className="flex items-center gap-3 bg-white border border-[#e8e4dc] rounded-xl px-5 py-2.5 text-sm text-gray-700">
-              <span className="flex items-center gap-1.5 font-medium">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <strong>{totalWeekCleanings}</strong>
-              </span>
-              <span className="text-gray-300">·</span>
-              <span className="text-amber-800 flex items-center gap-1.5 font-medium">
-                <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
-                <strong>{totalWeekSameDayTurnovers}</strong>
-              </span>
-              {totalWeekHighValue > 0 && (
-                <>
-                  <span className="text-gray-300">·</span>
-                  <span className="text-emerald-800 flex items-center gap-1.5 font-medium">
-                    <Gem className="w-3.5 h-3.5 text-emerald-600" />
-                    <strong>{totalWeekHighValue}</strong>
-                  </span>
-                </>
-              )}
+              {/* View Switcher Tabs */}
+              <nav className="flex items-center gap-1 bg-gray-100/70 p-1 rounded-lg">
+                <button
+                  onClick={() => setActiveTab("week")}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                    activeTab === "week"
+                      ? "bg-white text-gray-900 shadow-2xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  Week
+                </button>
+                <button
+                  onClick={() => setActiveTab("capacity")}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                    activeTab === "capacity"
+                      ? "bg-white text-gray-900 shadow-2xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  Capacity
+                </button>
+                <button
+                  onClick={() => setActiveTab("schedules")}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                    activeTab === "schedules"
+                      ? "bg-white text-gray-900 shadow-2xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  Schedules
+                </button>
+              </nav>
             </div>
 
-            <button
-              onClick={() => setIsLegendOpen(true)}
-              className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-800 bg-white hover:bg-gray-50 border border-[#e8e4dc] px-3 py-2 rounded-xl transition-colors cursor-pointer"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-gray-400" />
-              <span>Legend</span>
-            </button>
+            {/* Right Controls: Stats Pill + Legend Trigger */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-gray-50/80 border border-gray-200/60 rounded-lg px-3 py-1.5 text-xs text-gray-700">
+                <span className="flex items-center gap-1 font-semibold" title="Total active cleanings">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{totalWeekCleanings}</span>
+                </span>
+                <span className="text-gray-300">·</span>
+                <span className="text-amber-800 flex items-center gap-1 font-semibold" title="Same-day turnovers">
+                  <RefreshCw className="w-3.5 h-3.5 text-amber-600" />
+                  <span>{totalWeekSameDayTurnovers}</span>
+                </span>
+                {totalWeekHighValue > 0 && (
+                  <>
+                    <span className="text-gray-300">·</span>
+                    <span className="text-emerald-800 flex items-center gap-1 font-semibold" title="High-value reservations (\$2,000+)">
+                      <Gem className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>{totalWeekHighValue}</span>
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <button
+                onClick={() => setIsLegendOpen(true)}
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200/80 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-gray-400" />
+                <span className="hidden sm:inline">Legend</span>
+              </button>
+            </div>
           </div>
         </div>
 
