@@ -1,11 +1,10 @@
-// lib/cache.ts
 import { GlobalSettings, defaultSettings } from '@/types/settings';
 import { TrendDay, DashboardMetrics, CleanerWorkloadStat } from '@/types/dashboard';
 import { DaySchedule, CleaningAssignment } from '@/types/planner';
 import { getJsonData, saveJsonData } from '@/stores/jsonStore';
 import { getProperties } from '@/stores/propertyStore';
 import { getCleaners } from '@/stores/cleanerStore';
-import { getMockScheduleForWeek } from '@/data/mockService';
+import { getMockScheduleForWeek } from '@/lib/mockService';
 
 const FILE_NAME = 'settings.json';
 

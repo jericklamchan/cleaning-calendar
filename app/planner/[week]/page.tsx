@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Planner from "@/components/planner/Planner";
 import { getCleaners } from "@/stores/cleanerStore";
 import { getProperties } from "@/stores/propertyStore";
-import { getMockScheduleForWeek } from "@/data/mockService";
+import { getMockScheduleForWeek } from "@/lib/mockService";
 
 interface PageProps {
   params: Promise<{
@@ -13,7 +13,6 @@ interface PageProps {
 async function PlannerLoader({ params }: PageProps) {
   const { week } = await params;
 
-  // Concurrent fetch from JSON cache stores
   const [cleaners, properties] = await Promise.all([
     getCleaners(),
     getProperties(),

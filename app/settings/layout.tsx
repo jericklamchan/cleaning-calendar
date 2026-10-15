@@ -48,7 +48,6 @@ export default function SettingsLayout({
         </nav>
       </div>
 
-      {/* Child Tab Content */}
       <div>{children}</div>
     </div>
   );

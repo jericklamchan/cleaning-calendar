@@ -1,4 +1,3 @@
-// components/CleanerColumn.tsx
 import { useState } from 'react';
 import CleaningCard from './CleaningCard';
 
@@ -68,7 +67,7 @@ export default function CleanerColumn({ cleaner, date, cleanings, onReassign }: 
       <div className="space-y-2">
         {cleanings.map((cleaning, idx) => (
           <CleaningCard 
-            key={cleaning.id || `${cleaner.id}-${idx}`} // 👈 Fixed: Uses unique cleaning.id instead of map array index
+            key={cleaning.id || `${cleaner.id}-${idx}`}
             cleaning={cleaning} 
             cleanerId={cleaner.id} 
             date={date} 

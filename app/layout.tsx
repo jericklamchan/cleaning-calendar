@@ -1,4 +1,3 @@
-// app/layout.tsx
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
