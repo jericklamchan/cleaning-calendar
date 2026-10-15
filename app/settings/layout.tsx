@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import PageHeader from "@/components/PageHeader";
 import { usePathname } from 'next/navigation';
 
 const settingsTabs = [
@@ -19,13 +20,11 @@ export default function SettingsLayout({
 
   return (
     <div className="space-y-5">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-gray-900">Settings</h1>
-        <p className="text-xs text-gray-500 mt-0.5">
-          Manage global configurations, operational preferences, and system access.
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="Manage global configurations, operational preferences, and system access."
+        size="md"
+      />
 
       {/* Tabs */}
       <div className="border-b border-gray-200">

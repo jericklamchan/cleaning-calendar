@@ -1,20 +1,15 @@
-import { getProperties } from "@/stores/propertyStore";
 import { getCleaners } from "@/stores/cleanerStore";
-import { getUsers } from "@/stores/userStore";
 import { getSettings } from "@/lib/cache";
 
+import PageHeader from "@/components/PageHeader";
 import DashboardKPIs from "@/components/dashboard/DashboardKPIs";
 import CleaningTrendChart from "@/components/dashboard/CleaningTrendChart";
 import CleanerWorkload from "@/components/dashboard/CleanerWorkload";
 import OperationalMixCards from "@/components/dashboard/OperationalMixCards";
 
-const OVERLOAD_THRESHOLD = 4;
-
 export default async function DashboardView() {
-  const [properties, cleaners, users] = await Promise.all([
-    getProperties(),
+  const [cleaners, settings] = await Promise.all([
     getCleaners(),
-    getUsers(),
     getSettings(),
   ]);
 
@@ -27,7 +22,7 @@ export default async function DashboardView() {
     { day: "Sat", total: 12, sameDay: 5 },
     { day: "Sun", total: 8, sameDay: 3 },
   ];
-
+  const heavyloadThreshold = settings.heavyLoadThreshold ?? 4;
   const totalCleaningsWeekly = trendData.reduce((acc, d) => acc + d.total, 0);
   const sameDayTurnoversWeekly = trendData.reduce((acc, d) => acc + d.sameDay, 0);
   const standardCleaningsWeekly = totalCleaningsWeekly - sameDayTurnoversWeekly;
@@ -35,15 +30,11 @@ export default async function DashboardView() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-          Operations Dashboard & Analytics
-        </h1>
-        <p className="text-xs text-gray-500 mt-1">
-          Comprehensive report on cleaning assignments, cleaner stats, and turnover velocity.
-        </p>
-      </div>
+      <PageHeader
+        title="Operations Dashboard & Analytics"
+        description="Comprehensive report on cleaning assignments, cleaner stats, and turnover velocity."
+        size="md"
+      />
 
       {/* Top Metric Cards */}
       <DashboardKPIs
@@ -51,7 +42,7 @@ export default async function DashboardView() {
         sameDayCount={sameDayTurnoversWeekly}
         highValueCount={highValueAssignmentsWeekly}
         cleanersCount={cleaners.length}
-        overloadThreshold={OVERLOAD_THRESHOLD}
+        overloadThreshold={heavyloadThreshold}
       />
 
       {/* Row 1 Analytics: Trend Chart & Workload */}
