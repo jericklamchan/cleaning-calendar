@@ -1,10 +1,5 @@
 import { TrendingUp, CalendarDays } from "lucide-react";
-
-interface TrendDay {
-  day: string;
-  total: number;
-  sameDay: number;
-}
+import { TrendDay } from '@/types/dashboard';
 
 interface CleaningTrendChartProps {
   trendData: TrendDay[];
